@@ -23,47 +23,32 @@ struct Mat22f
 	float _10, _11;
 };
 
-// Common operators for Mat22f.
-// Note that you will need to implement these yourself.
-
 constexpr
 Mat22f operator*( Mat22f const& aLeft, Mat22f const& aRight ) noexcept
 {
-	//TODO: your implementation goes here
-	//TODO: your implementation goes here
-	//TODO: your implementation goes here
-
-	//TODO: remove the following when you start your implementation
-	(void)aLeft; // Avoid warnings about unused arguments until the function
-	(void)aRight;  // is properly implemented.
-	return Mat22f{ 1.f, 0.f, 0.f, 1.f };
+	Mat22f result = {};
+	result._00 = (aLeft._00 * aRight._00) + (aLeft._01 * aRight._10);
+	result._01 = (aLeft._00 * aRight._01) + (aLeft._01 * aRight._11);
+	result._10 = (aLeft._10 * aRight._00) + (aLeft._11 * aRight._10);
+	result._11 = (aLeft._10 * aRight._01) + (aLeft._11 * aRight._11);
+	return result;
 }
 
 constexpr
 Vec2f operator*( Mat22f const& aLeft, Vec2f const& aRight ) noexcept
 {
-	//TODO: your implementation goes here
-	//TODO: your implementation goes here
-	//TODO: your implementation goes here
-
-	//TODO: remove the following when you start your implementation
-	(void)aLeft; // Avoid warnings about unused arguments until the function
-	return aRight;
+	Vec2f result = {};
+	result.x = (aLeft._00 * aRight.x) + (aLeft._01 * aRight.x);
+	result.y = (aLeft._10 * aRight.y) + (aLeft._11 * aRight.y);
+	return result;
 }
-
-// Functions:
 
 inline
 Mat22f make_rotation_2d( float aAngle ) noexcept
 {
-	//TODO: your implementation goes here
-	//TODO: your implementation goes here
-	//TODO: your implementation goes here
-
-	//TODO: remove the following when you start your implementation
-	(void)aAngle; // Avoid warnings about unused arguments until the function
-	              // is properly implemented.
-	return Mat22f{ 1.f, 0.f, 0.f, 1.f };
+	float rCos = cos(aAngle);
+	float rSin = sin(aAngle);
+	return Mat22f{ rCos, -rSin, rSin, rCos };
 }
 
 #endif // MAT22_HPP_1F974C02_D0D1_4FBD_B5EE_A69C88112088

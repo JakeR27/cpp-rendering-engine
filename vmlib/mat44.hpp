@@ -53,94 +53,107 @@ constexpr Mat44f kIdentity44f = { {
 	0.f, 0.f, 0.f, 1.f
 } };
 
-// Common operators for Mat44f.
-// Note that you will need to implement these yourself.
-
 constexpr
 Mat44f operator*( Mat44f const& aLeft, Mat44f const& aRight ) noexcept
 {
-	//TODO: your implementation goes here
-	//TODO: remove the following when you start your implementation
-	(void)aLeft;   // Avoid warnings about unused arguments until the function
-	(void)aRight;  // is properly implemented.
-	return kIdentity44f;
+	// This approach is SLOW. Should really write it out fully as 16 lines. Will do for now.
+	Mat44f result = {};
+	for (int i = 0; i < 4; i++) {
+		for (int j = 0; j < 4; j++) {
+			float num = 0.f;
+			for (int k = 0; k < 4; k++) {
+				num += aLeft(i, k) * aRight(k, j);
+			}
+			result(i, j) = float(num);
+		}
+	}
+	return result;
 }
 
 constexpr
 Vec4f operator*( Mat44f const& aLeft, Vec4f const& aRight ) noexcept
 {
-	//TODO: your implementation goes here
-	//TODO: remove the following when you start your implementation
-	(void)aLeft;   // Avoid warnings about unused arguments until the function
-	(void)aRight;  // is properly implemented.
-	return { 0.f, 0.f, 0.f, 0.f };
+	Vec4f result = {};
+	result.x = (aLeft(0, 0) * aRight.x) + (aLeft(0, 1) * aRight.y) + (aLeft(0, 2) * aRight.z) + (aLeft(0, 3) * aRight.w);
+	result.y = (aLeft(1, 0) * aRight.x) + (aLeft(1, 1) * aRight.y) + (aLeft(1, 2) * aRight.z) + (aLeft(1, 3) * aRight.w);
+	result.z = (aLeft(2, 0) * aRight.x) + (aLeft(2, 1) * aRight.y) + (aLeft(2, 2) * aRight.z) + (aLeft(2, 3) * aRight.w);
+	result.w = (aLeft(3, 0) * aRight.x) + (aLeft(3, 1) * aRight.y) + (aLeft(3, 2) * aRight.z) + (aLeft(3, 3) * aRight.w);
+	return result;
 }
-
-// Functions:
 
 inline
 Mat44f make_rotation_x( float aAngle ) noexcept
 {
-	//TODO: your implementation goes here
-	//TODO: remove the following when you start your implementation
-	(void)aAngle; // Avoid warnings about unused arguments until the function
-	              // is properly implemented.
-	return kIdentity44f;
+	Mat44f result = {};
+	result(0, 0) = 1;
+	result(1, 1) = cos(aAngle);
+	result(1, 2) = -sin(aAngle);
+	result(2, 1) = sin(aAngle);
+	result(2, 2) = cos(aAngle);
+	result(3, 3) = 1;
+	return result;
 }
 
 
 inline
 Mat44f make_rotation_y( float aAngle ) noexcept
 {
-	//TODO: your implementation goes here
-	//TODO: remove the following when you start your implementation
-	(void)aAngle; // Avoid warnings about unused arguments until the function
-	              // is properly implemented.
-	return kIdentity44f;
+	Mat44f result = {};
+	result(0, 0) = cos(aAngle);
+	result(0, 2) = sin(aAngle);
+	result(1, 1) = 1;
+	result(2, 0) = -sin(aAngle);
+	result(2, 2) = cos(aAngle);
+	result(3, 3) = 1;
+	return result;
 }
 
 inline
 Mat44f make_rotation_z( float aAngle ) noexcept
 {
-	//TODO: your implementation goes here
-	//TODO: remove the following when you start your implementation
-	(void)aAngle; // Avoid warnings about unused arguments until the function
-	              // is properly implemented.
-	return kIdentity44f;
+	Mat44f result = {};
+	result(0, 0) = cos(aAngle);
+	result(0, 1) = -sin(aAngle);
+	result(1, 0) = sin(aAngle);
+	result(1, 1) = cos(aAngle);
+	result(2, 2) = 1;
+	result(3, 3) = 1;
+	return result;
 }
 
 inline
 Mat44f make_translation( Vec3f aTranslation ) noexcept
 {
-	//TODO: your implementation goes here
-	//TODO: remove the following when you start your implementation
-	(void)aTranslation; // Avoid warnings about unused arguments until the function
-	                    // is properly implemented.
-	return kIdentity44f;
+	Mat44f output = kIdentity44f;
+	output(0, 3) = aTranslation.x;
+	output(1, 3) = aTranslation.y;
+	output(2, 3) = aTranslation.z;
+	return output;
 }
 
 inline
 Mat44f make_scaling( float aSX, float aSY, float aSZ ) noexcept
 {
-	//TODO: your implementation goes here
-	//TODO: remove the following when you start your implementation
-	(void)aSX;  // Avoid warnings about unused arguments until the function
-	(void)aSY;  // is properly implemented.
-	(void)aSZ;
-	return kIdentity44f;
+	Mat44f result = kIdentity44f;
+	result(0, 0) = aSX;
+	result(1, 1) = aSY;
+	result(2, 2) = aSZ;
+	return result;
 }
 
 
 inline
 Mat44f make_perspective_projection( float aFovInRadians, float aAspect, float aNear, float aFar ) noexcept
 {
-	//TODO: your implementation goes here
-	//TODO: remove the following when you start your implementation
-	(void)aFovInRadians; // Avoid warnings about unused arguments until the function
-	(void)aAspect;       // is properly implemented.
-	(void)aNear;
-	(void)aFar;
-	return kIdentity44f;
+	Mat44f result = {};
+	float s = 1 / (tan(aFovInRadians/2));
+	result(0, 0) = s / aAspect;
+	result(1, 1) = s;
+	result(2, 2) = -((aFar + aNear) / (aFar - aNear));
+	result(2, 3) = (-2 * aFar * aNear) / (aFar - aNear);
+	result(3, 2) = -1;
+	result(3, 3) = 1;
+	return result;
 }
 
 
