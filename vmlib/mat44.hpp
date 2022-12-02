@@ -124,11 +124,11 @@ Mat44f make_rotation_z( float aAngle ) noexcept
 inline
 Mat44f make_translation( Vec3f aTranslation ) noexcept
 {
-	//TODO: your implementation goes here
-	//TODO: remove the following when you start your implementation
-	(void)aTranslation; // Avoid warnings about unused arguments until the function
-	                    // is properly implemented.
-	return kIdentity44f;
+	Mat44f output = kIdentity44f;
+	output(0, 3) = aTranslation.x;
+	output(1, 3) = aTranslation.y;
+	output(2, 3) = aTranslation.z;
+	return output;
 }
 
 inline
