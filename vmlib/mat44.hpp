@@ -146,13 +146,15 @@ Mat44f make_scaling( float aSX, float aSY, float aSZ ) noexcept
 inline
 Mat44f make_perspective_projection( float aFovInRadians, float aAspect, float aNear, float aFar ) noexcept
 {
-	//TODO: your implementation goes here
-	//TODO: remove the following when you start your implementation
-	(void)aFovInRadians; // Avoid warnings about unused arguments until the function
-	(void)aAspect;       // is properly implemented.
-	(void)aNear;
-	(void)aFar;
-	return kIdentity44f;
+	Mat44f result = {};
+	float s = 1 / (tan(aFovInRadians/2));
+	result(0, 0) = s / aAspect;
+	result(1, 1) = s;
+	result(2, 2) = -((aFar + aNear) / (aFar - aNear));
+	result(2, 3) = (-2 * aFar * aNear) / (aFar - aNear);
+	result(3, 2) = -1;
+	result(3, 3) = 1;
+	return result;
 }
 
 
