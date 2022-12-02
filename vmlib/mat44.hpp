@@ -98,11 +98,14 @@ Mat44f make_rotation_x( float aAngle ) noexcept
 inline
 Mat44f make_rotation_y( float aAngle ) noexcept
 {
-	//TODO: your implementation goes here
-	//TODO: remove the following when you start your implementation
-	(void)aAngle; // Avoid warnings about unused arguments until the function
-	              // is properly implemented.
-	return kIdentity44f;
+	Mat44f result = {};
+	result(0, 0) = cos(aAngle);
+	result(0, 2) = sin(aAngle);
+	result(1, 1) = 1;
+	result(2, 0) = -sin(aAngle);
+	result(2, 2) = cos(aAngle);
+	result(3, 3) = 1;
+	return result;
 }
 
 inline
