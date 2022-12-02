@@ -43,8 +43,6 @@ Vec2f operator*( Mat22f const& aLeft, Vec2f const& aRight ) noexcept
 	return result;
 }
 
-// Functions:
-
 inline
 Mat22f make_rotation_2d( float aAngle ) noexcept
 {
