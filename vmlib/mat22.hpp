@@ -23,9 +23,6 @@ struct Mat22f
 	float _10, _11;
 };
 
-// Common operators for Mat22f.
-// Note that you will need to implement these yourself.
-
 constexpr
 Mat22f operator*( Mat22f const& aLeft, Mat22f const& aRight ) noexcept
 {
