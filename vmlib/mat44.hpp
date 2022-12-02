@@ -53,9 +53,6 @@ constexpr Mat44f kIdentity44f = { {
 	0.f, 0.f, 0.f, 1.f
 } };
 
-// Common operators for Mat44f.
-// Note that you will need to implement these yourself.
-
 constexpr
 Mat44f operator*( Mat44f const& aLeft, Mat44f const& aRight ) noexcept
 {
@@ -75,8 +72,6 @@ Vec4f operator*( Mat44f const& aLeft, Vec4f const& aRight ) noexcept
 	(void)aRight;  // is properly implemented.
 	return { 0.f, 0.f, 0.f, 0.f };
 }
-
-// Functions:
 
 inline
 Mat44f make_rotation_x( float aAngle ) noexcept
