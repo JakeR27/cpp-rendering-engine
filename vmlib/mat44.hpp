@@ -84,11 +84,14 @@ Vec4f operator*( Mat44f const& aLeft, Vec4f const& aRight ) noexcept
 inline
 Mat44f make_rotation_x( float aAngle ) noexcept
 {
-	//TODO: your implementation goes here
-	//TODO: remove the following when you start your implementation
-	(void)aAngle; // Avoid warnings about unused arguments until the function
-	              // is properly implemented.
-	return kIdentity44f;
+	Mat44f result = {};
+	result(0, 0) = 1;
+	result(1, 1) = cos(aAngle);
+	result(1, 2) = -sin(aAngle);
+	result(2, 1) = sin(aAngle);
+	result(2, 2) = cos(aAngle);
+	result(3, 3) = 1;
+	return result;
 }
 
 
