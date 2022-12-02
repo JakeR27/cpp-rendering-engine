@@ -37,13 +37,10 @@ Mat22f operator*( Mat22f const& aLeft, Mat22f const& aRight ) noexcept
 constexpr
 Vec2f operator*( Mat22f const& aLeft, Vec2f const& aRight ) noexcept
 {
-	//TODO: your implementation goes here
-	//TODO: your implementation goes here
-	//TODO: your implementation goes here
-
-	//TODO: remove the following when you start your implementation
-	(void)aLeft; // Avoid warnings about unused arguments until the function
-	return aRight;
+	Vec2f result = {};
+	result.x = (aLeft._00 * aRight.x) + (aLeft._01 * aRight.x);
+	result.y = (aLeft._10 * aRight.y) + (aLeft._11 * aRight.y);
+	return result;
 }
 
 // Functions:
