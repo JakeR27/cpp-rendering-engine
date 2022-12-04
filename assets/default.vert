@@ -3,10 +3,12 @@
 layout( location = 0 ) in vec3 iPosition;
 layout( location = 1 ) in vec3 iColor;
 
+layout( location = 1 ) uniform vec4 projection;
+
 out vec3 v2fColor;
 
 void main()
 {
-	v2fColor = iColor;
-	gl_Position = vec4( iPosition.xyz, 1.0);
+	v2fColor = iColor; 
+	gl_Position = projection * vec4( iPosition.xyz, 1.0);
 }
