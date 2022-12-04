@@ -24,17 +24,15 @@ typedef struct _cameraControl
 // Vector to move camera to the right by 1 unit
 inline Vec3f cam_right(const cameraControl* camera)
 {
-	//Vec4f dir = make_rotation_y(camera->phi) * Vec4f{camera->forwards.x, camera->forwards.y, camera->forwards.z, 1.0f};
-	return normalize(cross(camera->direction, camera->up));
+	Vec4f dir = make_rotation_y(-camera->phi) * Vec4f{camera->forwards.x, camera->forwards.y, camera->forwards.z, 1.0f};
+	return normalize(cross({dir.x, dir.y, dir.z}, camera->up));
 	
 }
 
 // Vector to move camera to the left by 1 unit
 inline Vec3f cam_left(const cameraControl* camera)
 {
-	//Vec4f dir = make_rotation_y(camera->phi) * Vec4f{camera->forwards.x, camera->forwards.y, camera->forwards.z, 1.0f};
-	return -normalize(cross(camera->direction, camera->up));
-	
+	return -cam_right(camera);
 }
 
 // Vector to move camera up by 1 unit
@@ -52,14 +50,13 @@ inline Vec3f cam_down(const cameraControl* camera)
 // Vector to move camera forwards by 1 unit
 inline Vec3f cam_forwards(const cameraControl* camera)
 {
-	//Vec4f dir = make_rotation_y(camera->phi) * Vec4f{camera->forwards.x, camera->forwards.y, camera->forwards.z, 1.0f};
-	return normalize(camera->direction);
+	Vec4f dir = make_rotation_y(-camera->phi) * Vec4f{camera->forwards.x, camera->forwards.y, camera->forwards.z, 1.0f};
+	return normalize({dir.x, dir.y, dir.z});
 }
 
 // Vector to move camera backwards by 1 unit
 inline Vec3f cam_backwards(const cameraControl* camera)
 {
-	//Vec4f dir = make_rotation_y(camera->phi) * Vec4f{camera->forwards.x, camera->forwards.y, camera->forwards.z, 1.0f};
-	return -normalize(camera->direction);
+	return -cam_forwards(camera);
 }
 #endif // CAMERA_CONTROL
