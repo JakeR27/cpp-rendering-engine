@@ -17,11 +17,17 @@
 
 #include "defaults.hpp"
 #include "complex_object.hpp"
+#include "camera.hpp"
 
 namespace
 {
 	constexpr char const* kWindowTitle = "COMP3811 - Coursework 2";
-	
+
+	struct State_
+	{
+		cameraControl camControl;
+	};
+
 	void glfw_callback_error_( int, char const* );
 
 	void glfw_callback_key_( GLFWwindow*, int, int, int, int );
@@ -88,8 +94,18 @@ int main() try
 
 	GLFWWindowDeleter windowDeleter{ window };
 
+	// Store state in window data
+	State_ state{};
+	glfwSetWindowUserPointer( window, &state );
+
+	// Initialise camera info
+	state.camControl.position = {0.f, 0.f, -10.f};
+	state.camControl.direction = {0.f , 0.f, 1.f};
+	state.camControl.up = {0.f , 1.0f, 0.f};
+
 	// Set up event handling
 	glfwSetKeyCallback( window, &glfw_callback_key_ );
+
 
 	// Set up drawing stuff
 	glfwMakeContextCurrent( window );
@@ -220,12 +236,22 @@ int main() try
 
 		//####################### Update state #######################
 
+		if (state.camControl.actionForwards)	state.camControl.position += cam_forwards(&state.camControl);
+		if (state.camControl.actionBackwards)	state.camControl.position += cam_backwards(&state.camControl);
+		if (state.camControl.actionLeft)		state.camControl.position += cam_left(&state.camControl);
+		if (state.camControl.actionRight)		state.camControl.position += cam_right(&state.camControl);
+		if (state.camControl.actionUp)			state.camControl.position += cam_up(&state.camControl);
+		if (state.camControl.actionDown)		state.camControl.position += cam_down(&state.camControl);
+
 		Mat44f projection = make_perspective_projection(
 			60.f * 3.1415926f / 180.f,
 			fbwidth / float(fbheight),
 			0.1f, 100.f
-		) * make_translation({0.f, 0.f, -10.f}) * make_rotation_y(0.4f);
+		);
 
+		Mat44f world2camera = make_translation(state.camControl.position);
+
+		Mat44f projCameraWorld = projection * world2camera;
 
 		OGL_CHECKPOINT_DEBUG();
 		//####################### Draw frame #######################
@@ -237,7 +263,7 @@ int main() try
 		glBindVertexArray(complexObjectVAO);
 		glUniformMatrix4fv(
 			0, 1,
-			GL_TRUE, projection.v
+			GL_TRUE, projCameraWorld.v
 		);
 
 		// Draw complex object
@@ -275,11 +301,75 @@ namespace
 
 	void glfw_callback_key_( GLFWwindow* aWindow, int aKey, int, int aAction, int )
 	{
+		// Check if window should close
 		if( GLFW_KEY_ESCAPE == aKey && GLFW_PRESS == aAction )
 		{
 			glfwSetWindowShouldClose( aWindow, GLFW_TRUE );
 			return;
 		}
+
+		// get state info
+		if( auto* state = static_cast<State_*>(glfwGetWindowUserPointer( aWindow )) ) {
+
+			// make camera active if SPACE pressed
+			if( GLFW_KEY_SPACE == aKey && GLFW_PRESS == aAction )
+			{
+				state->camControl.cameraActive = !state->camControl.cameraActive;
+
+				if( state->camControl.cameraActive )
+					glfwSetInputMode( aWindow, GLFW_CURSOR, GLFW_CURSOR_HIDDEN );
+				else
+					glfwSetInputMode( aWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL );
+			}
+
+			// Camera controls if camera is active
+			if( state->camControl.cameraActive )
+			{
+				if( GLFW_KEY_W == aKey )
+				{
+					if( GLFW_PRESS == aAction )
+						state->camControl.actionForwards = true;
+					else if( GLFW_RELEASE == aAction )
+						state->camControl.actionForwards = false;
+				}
+				else if( GLFW_KEY_S == aKey )
+				{
+					if( GLFW_PRESS == aAction )
+						state->camControl.actionBackwards = true;
+					else if( GLFW_RELEASE == aAction )
+						state->camControl.actionBackwards = false;
+				}
+				else if( GLFW_KEY_A == aKey )
+				{
+					if( GLFW_PRESS == aAction )
+						state->camControl.actionLeft = true;
+					else if( GLFW_RELEASE == aAction )
+						state->camControl.actionLeft = false;
+				}
+				else if( GLFW_KEY_D == aKey )
+				{
+					if( GLFW_PRESS == aAction )
+						state->camControl.actionRight = true;
+					else if( GLFW_RELEASE == aAction )
+						state->camControl.actionRight = false;
+				}
+				else if( GLFW_KEY_Q == aKey )
+				{
+					if( GLFW_PRESS == aAction )
+						state->camControl.actionUp = true;
+					else if( GLFW_RELEASE == aAction )
+						state->camControl.actionUp = false;
+				}
+				else if( GLFW_KEY_E == aKey )
+				{
+					if( GLFW_PRESS == aAction )
+						state->camControl.actionDown = true;
+					else if( GLFW_RELEASE == aAction )
+						state->camControl.actionDown = false;
+				}
+			}
+		}
+		
 	}
 }
 
