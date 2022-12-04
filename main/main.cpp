@@ -220,7 +220,11 @@ int main() try
 
 		//####################### Update state #######################
 
-		//TODO: update state
+		Mat44f projection = make_perspective_projection(
+			60.f * 3.1415926f / 180.f,
+			fbwidth / float(fbheight),
+			0.1f, 100.f
+		);
 
 
 		OGL_CHECKPOINT_DEBUG();
@@ -231,6 +235,10 @@ int main() try
 		glUseProgram(prog.programId());
 
 		glBindVertexArray(complexObjectVAO);
+		glUniformMatrix4fv(
+			0, 1,
+			GL_TRUE, projection.v
+		);
 
 		// Draw complex object
 		glDrawArrays(GL_TRIANGLES, 0, sizeof(kCubePositions));
