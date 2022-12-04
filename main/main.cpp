@@ -16,6 +16,7 @@
 #include "../vmlib/mat44.hpp"
 
 #include "defaults.hpp"
+#include "complex_object.hpp"
 
 namespace
 {
