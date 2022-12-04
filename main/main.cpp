@@ -22,6 +22,8 @@
 namespace
 {
 	constexpr char const* kWindowTitle = "COMP3811 - Coursework 2";
+	constexpr float const kMouseSensitivity = 0.01f;
+	constexpr float const kPi = 3.1415962f;
 
 	struct State_
 	{
@@ -31,6 +33,7 @@ namespace
 	void glfw_callback_error_( int, char const* );
 
 	void glfw_callback_key_( GLFWwindow*, int, int, int, int );
+	void glfw_callback_motion_( GLFWwindow*, double, double );
 
 	struct GLFWCleanupHelper
 	{
@@ -101,11 +104,12 @@ int main() try
 	// Initialise camera info
 	state.camControl.position = {0.f, 0.f, -10.f};
 	state.camControl.direction = {0.f , 0.f, 1.f};
+	state.camControl.forwards = {0.f , 0.f, 1.f};
 	state.camControl.up = {0.f , 1.0f, 0.f};
 
 	// Set up event handling
 	glfwSetKeyCallback( window, &glfw_callback_key_ );
-
+	glfwSetCursorPosCallback( window, &glfw_callback_motion_ );
 
 	// Set up drawing stuff
 	glfwMakeContextCurrent( window );
@@ -243,20 +247,26 @@ int main() try
 		if (state.camControl.actionUp)			state.camControl.position += cam_up(&state.camControl);
 		if (state.camControl.actionDown)		state.camControl.position += cam_down(&state.camControl);
 
+
 		Mat44f projection = make_perspective_projection(
-			60.f * 3.1415926f / 180.f,
+			60.f * kPi / 180.f,
 			fbwidth / float(fbheight),
 			0.1f, 100.f
 		);
 
-		Mat44f world2camera = make_translation(state.camControl.position);
+		Mat44f worldRotationX = make_rotation_x(state.camControl.theta);
+		Mat44f worldRotationY = make_rotation_y(state.camControl.phi);
+		Mat44f worldTranslation = make_translation(state.camControl.position);
+		Mat44f world2camera = worldRotationX * worldRotationY *  worldTranslation;
 
 		Mat44f projCameraWorld = projection * world2camera;
+		Mat44f projCameraWorld2 = projection * world2camera * make_translation({3.f, 0.f, 0.f});
 
 		OGL_CHECKPOINT_DEBUG();
 		//####################### Draw frame #######################
 
 		// Prepare to draw
+		//glEnable(GL_DEPTH_TEST); // not working for some reason
 		glClear(GL_COLOR_BUFFER_BIT);
 		glUseProgram(prog.programId());
 
@@ -264,6 +274,14 @@ int main() try
 		glUniformMatrix4fv(
 			0, 1,
 			GL_TRUE, projCameraWorld.v
+		);
+
+		// Draw complex object
+		glDrawArrays(GL_TRIANGLES, 0, sizeof(kCubePositions));
+
+		glUniformMatrix4fv(
+			0, 1,
+			GL_TRUE, projCameraWorld2.v
 		);
 
 		// Draw complex object
@@ -370,6 +388,32 @@ namespace
 			}
 		}
 		
+	}
+
+	void glfw_callback_motion_( GLFWwindow* aWindow, double aX, double aY )
+	{
+		if( auto* state = static_cast<State_*>(glfwGetWindowUserPointer( aWindow )) )
+		{
+			if( state->camControl.cameraActive )
+			{
+				auto const dx = float(aX-state->camControl.lastX);
+				auto const dy = float(aY-state->camControl.lastY);
+
+				state->camControl.phi += dx*kMouseSensitivity;
+				
+				state->camControl.theta += dy*kMouseSensitivity;
+				if( state->camControl.theta > kPi/2.f )
+					state->camControl.theta = kPi/2.f;
+				else if( state->camControl.theta < -kPi/2.f )
+					state->camControl.theta = -kPi/2.f;
+			}
+
+			printf("camera: theta: %f, phi: %f\n", state->camControl.theta, state->camControl.phi);
+
+
+			state->camControl.lastX = float(aX);
+			state->camControl.lastY = float(aY);
+		}
 	}
 }
 
