@@ -224,7 +224,7 @@ int main() try
 			60.f * 3.1415926f / 180.f,
 			fbwidth / float(fbheight),
 			0.1f, 100.f
-		);
+		) * make_translation({0.f, 0.f, -10.f}) * make_rotation_y(0.4f);
 
 
 		OGL_CHECKPOINT_DEBUG();
