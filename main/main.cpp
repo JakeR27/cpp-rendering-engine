@@ -16,6 +16,7 @@
 #include "../vmlib/mat44.hpp"
 
 #include "defaults.hpp"
+#include "complex_object.hpp"
 
 namespace
 {
@@ -137,54 +138,41 @@ int main() try
 
 	// Other initialization & loading
 	OGL_CHECKPOINT_ALWAYS();
-	
-	// TODO: create VBOs and VAO
-	// Create a position buffer for storing vertex coordinates
-	static float const kPositions[] = {
-		0.f, 0.8f, // vertex 0 position
-		-0.7f, -0.8f, // vertex 1 position
-		+0.7f, -0.8f // vertex 2 position
-	};
 
-	// define and bind a position buffer
-	GLuint positionVBO = 0;
-	glGenBuffers(1, &positionVBO);
-	glBindBuffer(GL_ARRAY_BUFFER, positionVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(kPositions), kPositions, GL_STATIC_DRAW);
+	//####################### VBO and VAO creation #######################
 
-	// Create a color buffer for storing linear RGB colors
-	static float const kColors[] = {
-		1.f, 1.8f, 0.f, // vertex 0 color
-		1.f, 0.f, 1.f, // vertex 1 color
-		0.f, 1.f, 1.f  // vertex 2 color
-	};
+	// Complex Object Position VBO
+	GLuint complexObjectPositionVBO = 0;
+	glGenBuffers(1, &complexObjectPositionVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, complexObjectPositionVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(kCubePositions), kCubePositions, GL_STATIC_DRAW);
 
-	// define and bind a color buffer
-	GLuint colorVBO = 0;
-	glGenBuffers(1, &colorVBO);
-	glBindBuffer(GL_ARRAY_BUFFER, colorVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(kColors), kColors, GL_STATIC_DRAW);
+	// Complex Object Color VBO
+	GLuint complexObjectColorVBO = 0;
+	glGenBuffers(1, &complexObjectColorVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, complexObjectColorVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(kCubeColors), kCubeColors, GL_STATIC_DRAW);
 
-	// Create a VAO for our VBOs
-	GLuint vao = 0;
-	glGenVertexArrays(1, &vao);
-	glBindVertexArray(vao);
+	// Bind VBO into VAO
+	GLuint complexObjectVAO = 0;
+	glGenVertexArrays(1, &complexObjectVAO);
+	glBindVertexArray(complexObjectVAO);
 
-	glBindBuffer(GL_ARRAY_BUFFER, positionVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, complexObjectPositionVBO);
 	glVertexAttribPointer(
-		0, // location = 0 in vertex shade
-		2, GL_FLOAT, GL_FALSE, // 2 floats, not normalized to [0..1] (GL FALSE
-		0, // stride = 0 indicates that there is no padding between input
-		0 // data starts at offset 0 in the VBO.
+		0,						// loc 0 in vert shader
+		3, GL_FLOAT, GL_FALSE,	// 3 floats, not normalized
+		0,						// no padding
+		0						// no offset
 	);
 	glEnableVertexAttribArray(0);
 
-	glBindBuffer(GL_ARRAY_BUFFER, colorVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, complexObjectColorVBO);
 	glVertexAttribPointer(
-		1, // location = 1 in vertex shader
-		3, GL_FLOAT, GL_FALSE, // 3 floats, not normalized to [0..1] (GL FALSE)
-		0, // see above
-		0 // see above
+		1,						// loc 1 in vert shader
+		3, GL_FLOAT, GL_FALSE,	// 3 floats, not normalized
+		0,						// no padding
+		0						// no offset
 	);
 	glEnableVertexAttribArray(1);
 
@@ -194,10 +182,12 @@ int main() try
 
 	// Clean up buffers
 	// Note: these are not deleted fully, as the VAO holds a reference to them.
-	glDeleteBuffers(1, &colorVBO);
-	glDeleteBuffers(1, &positionVBO);
+	glDeleteBuffers(1, &complexObjectColorVBO);
+	glDeleteBuffers(1, &complexObjectPositionVBO);
 
 	OGL_CHECKPOINT_ALWAYS();
+
+	//####################### Main Loop #######################
 
 	// Main loop
 	while( !glfwWindowShouldClose( window ) )
@@ -228,41 +218,33 @@ int main() try
 			glViewport( 0, 0, iwidth, iheight );
 		}
 
-		// Update state
+		//####################### Update state #######################
 
 		//TODO: update state
-	
-		// Draw scene
+
+
 		OGL_CHECKPOINT_DEBUG();
+		//####################### Draw frame #######################
 
-		//TODO: draw frame
-		// Clear color buffer to specified clear color (glClearColor())
+		// Prepare to draw
 		glClear(GL_COLOR_BUFFER_BIT);
-
-		// We want to draw with our program..
 		glUseProgram(prog.programId());
 
-		// Specify the base color (uBaseColor in location 0 in the fragment shader) 
-		static float const baseColor[] = { 0.2f, 1.f, 1.f };
-		glUniform3fv(0 , 1, baseColor);
+		glBindVertexArray(complexObjectVAO);
 
-		// Source input as defined in our VAO
-		glBindVertexArray(vao);
-
-		// Draw a single triangle (= 3 vertices), starting at index 0
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		// Draw complex object
+		glDrawArrays(GL_TRIANGLES, 0, sizeof(kCubePositions));
 
 		// Reset state
 		glBindVertexArray(0);
 		glUseProgram(0);
 
 		OGL_CHECKPOINT_DEBUG();
-
-		// Display results
+		//####################### Display frame #######################
 		glfwSwapBuffers( window );
 	}
 
-	// Cleanup.
+	//####################### Cleanup (on exit) #######################
 	//TODO: additional cleanup
 	
 	return 0;
