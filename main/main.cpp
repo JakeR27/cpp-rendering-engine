@@ -154,9 +154,9 @@ int main() try
 	glBufferData(GL_ARRAY_BUFFER, sizeof(kCubeColors), kCubeColors, GL_STATIC_DRAW);
 
 	// Bind VBO into VAO
-	GLuint vao = 0;
-	glGenVertexArrays(1, &vao);
-	glBindVertexArray(vao);
+	GLuint complexObjectVAO = 0;
+	glGenVertexArrays(1, &complexObjectVAO);
+	glBindVertexArray(complexObjectVAO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, complexObjectPositionVBO);
 	glVertexAttribPointer(
@@ -230,7 +230,7 @@ int main() try
 		glClear(GL_COLOR_BUFFER_BIT);
 		glUseProgram(prog.programId());
 
-		glBindVertexArray(vao);
+		glBindVertexArray(complexObjectVAO);
 
 		// Draw complex object
 		glDrawArrays(GL_TRIANGLES, 0, sizeof(kCubePositions));
