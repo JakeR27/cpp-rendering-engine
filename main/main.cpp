@@ -214,7 +214,11 @@ int main() try
 	OGL_CHECKPOINT_ALWAYS();
 
 	// Simple Mesh VBO and VAO creation using the vao_create() function
-	auto testCylinder = make_cylinder(true, 16, { 1.f, 0.f, 0.f });
+	// this test cylinder has been scaled and rotated
+	auto testCylinder = make_cylinder(true, 16, { 0.f, 1.f, 0.f },
+		make_rotation_z(3.141592f / 4.f) *
+		make_scaling(5.f, 0.5f, 0.5f) // scale X by 5, Y and Z by 0.1
+	);
 	GLuint simpleMeshVAO = create_vao(testCylinder);	// keep track of this, this is the cylinder's unique VAO object ID
 	std::size_t vertexCount = testCylinder.positions.size();	// vertex count will be used in glDrawArrays() later
 

@@ -76,6 +76,15 @@ SimpleMeshData make_cylinder( bool aCapped, std::size_t aSubdivs, Vec3f aColor, 
 		}
 	}
 
+	for (auto& p : pos)
+	{
+		Vec4f p4{ p.x, p.y, p.z, 1.f };
+		Vec4f t = aPreTransform * p4;
+		t /= t.w;
+		
+		p = Vec3f{ t.x, t.y, t.z };
+	}
+
 	std::vector col(pos.size(), aColor);
 
 	return SimpleMeshData{ std::move(pos), std::move(col) };
