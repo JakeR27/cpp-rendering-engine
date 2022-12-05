@@ -97,10 +97,18 @@
   <ItemGroup>
     <ClInclude Include="camera.hpp" />
     <ClInclude Include="complex_object.hpp" />
+    <ClInclude Include="cone.hpp" />
+    <ClInclude Include="cylinder.hpp" />
     <ClInclude Include="defaults.hpp" />
+    <ClInclude Include="loadobj.hpp" />
+    <ClInclude Include="simple_mesh.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="cone.cpp" />
+    <ClCompile Include="cylinder.cpp" />
+    <ClCompile Include="loadobj.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="simple_mesh.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\vmlib\vmlib.vcxproj">

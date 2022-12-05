@@ -19,6 +19,11 @@
 #include "complex_object.hpp"
 #include "camera.hpp"
 
+// ex 4
+#include "cone.hpp"
+#include "cylinder.hpp"
+#include "loadobj.hpp"
+
 namespace
 {
 	constexpr char const* kWindowTitle = "COMP3811 - Coursework 2";
@@ -135,6 +140,7 @@ int main() try
 
 	// DONE: global GL setup goes here
 	glEnable(GL_FRAMEBUFFER_SRGB);
+	// face culling
 	glEnable(GL_CULL_FACE);
 	// Clear colour is defined as a grey here
 	glClearColor(0.2f, 0.2f, 0.2f, 0.0f);
@@ -207,6 +213,34 @@ int main() try
 
 	OGL_CHECKPOINT_ALWAYS();
 
+	// Simple Mesh VBO and VAO creation using the vao_create() function
+	// this test cylinder has been scaled and rotated
+	auto testCylinder = make_cylinder(true, 16, { 0.f, 1.f, 0.f },
+		make_rotation_z(3.141592f / 4.f) *
+		make_scaling(5.f, 0.5f, 0.5f) // scale X by 5, Y and Z by 0.1
+	);
+	GLuint simpleMeshVAO = create_vao(testCylinder);	// keep track of this, this is the cylinder's unique VAO object ID
+	std::size_t vertexCount = testCylinder.positions.size();	// vertex count will be used in glDrawArrays() later
+
+	// create an arrow using a cylinder and a cone
+	auto xcyl = make_cylinder(true, 16, { 1.f, 0.f, 0.f },
+		make_scaling(5.f, 0.1f, 0.1f)
+	);
+	auto xcone = make_cone(true, 16, { 0.f, 0.f, 0.f, },
+		make_scaling(1.f, 0.3f, 0.3f) * make_translation({ 5.f, 0.f, 0.f } )
+	);
+		
+	auto xarrow = concatenate(std::move(xcyl), xcone);
+	GLuint arrowVAO = create_vao(xarrow);
+	std::size_t vertexCountArrow = xarrow.positions.size();
+
+	// load an armadillo mesh
+	// our .objs will be in assets, pathed to as such
+	auto armadillo = load_wavefront_obj("assets/Armadillo.obj");
+	GLuint armadilloVAO = create_vao(armadillo);
+	std::size_t vertexCountArmadillo = armadillo.positions.size();
+
+
 	//####################### Main Loop #######################
 
 	// Main loop
@@ -259,37 +293,94 @@ int main() try
 		Mat44f worldTranslation = make_translation(state.camControl.position);
 		Mat44f world2camera = worldRotationX * worldRotationY *  worldTranslation;
 
-		Mat44f projCameraWorld = projection * world2camera;
-		Mat44f projCameraWorld2 = projection * world2camera * make_translation({3.f, 0.f, 0.f});
+		Mat44f projCameraWorld = projection * world2camera;	// cube 1
+		Mat44f projCameraWorld2 = projection * world2camera * make_translation({3.f, 0.f, 0.f}); // cube 2
+		Mat44f projCameraWorld3 = projection * world2camera * make_translation({ -3.f, 0.f, 0.f }); // simple mesh cylinder
 
 		OGL_CHECKPOINT_DEBUG();
 		//####################### Draw frame #######################
 
-		// Prepare to draw
-		glEnable(GL_DEPTH_TEST); // not working for some reason
+		// General draw frame settings
+		glEnable(GL_DEPTH_TEST);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // wireframe mode
+
+		//// Prepare to draw the complex objects (2 cubes)
+		//glUseProgram(prog.programId());
+
+		//glBindVertexArray(complexObjectVAO);
+		//glUniformMatrix4fv(
+		//	0, 1,
+		//	GL_TRUE, projCameraWorld.v
+		//);
+
+		//// Draw complex object
+		//glDrawArrays(GL_TRIANGLES, 0, sizeof(kCubePositions));
+
+		//glUniformMatrix4fv(
+		//	0, 1,
+		//	GL_TRUE, projCameraWorld2.v
+		//);
+
+		//// Draw complex object
+		//glDrawArrays(GL_TRIANGLES, 0, sizeof(kCubePositions));
+
+		//// Reset state
+		//glBindVertexArray(0);
+		//glUseProgram(0);
+		//// End of drawing complex objects
+
+		//// Prepare to draw using simple meshes (cylinder)
+		//glUseProgram(prog.programId());
+
+		//// bind the cylinder's VAO
+		//glBindVertexArray(simpleMeshVAO);
+		//glUniformMatrix4fv(
+		//	0, 1,
+		//	GL_TRUE, projCameraWorld3.v
+		//);
+
+		//// draw the cylinder
+		//glDrawArrays(GL_TRIANGLES, 0, vertexCount);
+
+		//// Reset state
+		//glBindVertexArray(0);
+		//glUseProgram(0);
+
+		//// Prepare to draw using simple meshes (arrow)
+		//glUseProgram(prog.programId());
+
+		//// bind the arrow's VAO
+		//glBindVertexArray(arrowVAO);
+		//glUniformMatrix4fv(
+		//	0, 1,
+		//	GL_TRUE, projCameraWorld.v
+		//);
+
+		//// draw the arrow
+		//glDrawArrays(GL_TRIANGLES, 0, vertexCountArrow);
+
+		//// Reset state
+		//glBindVertexArray(0);
+		//glUseProgram(0);
+
+		// Prepare to draw using simple meshes (armadillo)
 		glUseProgram(prog.programId());
 
-		glBindVertexArray(complexObjectVAO);
+		// bind the armadillos's VAO
+		glBindVertexArray(armadilloVAO);
 		glUniformMatrix4fv(
 			0, 1,
 			GL_TRUE, projCameraWorld.v
 		);
 
-		// Draw complex object
-		glDrawArrays(GL_TRIANGLES, 0, sizeof(kCubePositions));
-
-		glUniformMatrix4fv(
-			0, 1,
-			GL_TRUE, projCameraWorld2.v
-		);
-
-		// Draw complex object
-		glDrawArrays(GL_TRIANGLES, 0, sizeof(kCubePositions));
+		// draw the armadillo
+		glDrawArrays(GL_TRIANGLES, 0, vertexCountArmadillo);
 
 		// Reset state
 		glBindVertexArray(0);
 		glUseProgram(0);
+		// End of drawing using simple meshes
 
 		OGL_CHECKPOINT_DEBUG();
 		//####################### Display frame #######################
