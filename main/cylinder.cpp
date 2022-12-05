@@ -2,7 +2,7 @@
 
 SimpleMeshData make_cylinder( bool aCapped, std::size_t aSubdivs, Vec3f aColor, Mat44f aPreTransform )
 {
-	// Implement cylinder shell generation
+	// DONE: Implement cylinder shell generation
 	std::vector<Vec3f> pos;
 
 	float prevY = std::cos(0.f);
