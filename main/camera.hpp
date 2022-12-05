@@ -59,4 +59,15 @@ inline Vec3f cam_backwards(const cameraControl* camera)
 {
 	return -cam_forwards(camera);
 }
+
+inline void cam_action_reset(cameraControl* camera)
+{
+	camera->actionForwards = false;
+	camera->actionBackwards = false;
+	camera->actionLeft = false;
+	camera->actionRight = false;
+	camera->actionUp = false;
+	camera->actionDown = false;
+
+}
 #endif // CAMERA_CONTROL
