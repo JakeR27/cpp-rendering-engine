@@ -19,6 +19,11 @@
 #include "complex_object.hpp"
 #include "camera.hpp"
 
+// ex 4
+#include "cone.hpp"
+#include "cylinder.hpp"
+#include "loadobj.hpp"
+
 namespace
 {
 	constexpr char const* kWindowTitle = "COMP3811 - Coursework 2";
@@ -135,6 +140,7 @@ int main() try
 
 	// DONE: global GL setup goes here
 	glEnable(GL_FRAMEBUFFER_SRGB);
+	// face culling
 	glEnable(GL_CULL_FACE);
 	// Clear colour is defined as a grey here
 	glClearColor(0.2f, 0.2f, 0.2f, 0.0f);
@@ -207,6 +213,11 @@ int main() try
 
 	OGL_CHECKPOINT_ALWAYS();
 
+	// Simple Mesh VBO and VAO creation using the vao_create() function
+	auto testCylinder = make_cylinder(true, 16, { 1.f, 0.f, 0.f });
+	GLuint simpleMeshVAO = create_vao(testCylinder);	// keep track of this, this is the cylinder's unique VAO object ID
+	std::size_t vertexCount = testCylinder.positions.size();	// vertex count will be used in glDrawArrays() later
+
 	//####################### Main Loop #######################
 
 	// Main loop
@@ -259,37 +270,60 @@ int main() try
 		Mat44f worldTranslation = make_translation(state.camControl.position);
 		Mat44f world2camera = worldRotationX * worldRotationY *  worldTranslation;
 
-		Mat44f projCameraWorld = projection * world2camera;
-		Mat44f projCameraWorld2 = projection * world2camera * make_translation({3.f, 0.f, 0.f});
+		Mat44f projCameraWorld = projection * world2camera;	// cube 1
+		Mat44f projCameraWorld2 = projection * world2camera * make_translation({3.f, 0.f, 0.f}); // cube 2
+		Mat44f projCameraWorld3 = projection * world2camera * make_translation({ -3.f, 0.f, 0.f }); // simple mesh cylinder
 
 		OGL_CHECKPOINT_DEBUG();
 		//####################### Draw frame #######################
 
-		// Prepare to draw
-		glEnable(GL_DEPTH_TEST); // not working for some reason
+		// General draw frame settings
+		glEnable(GL_DEPTH_TEST);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		//// Prepare to draw the complex objects (2 cubes)
+		//glUseProgram(prog.programId());
+
+		//glBindVertexArray(complexObjectVAO);
+		//glUniformMatrix4fv(
+		//	0, 1,
+		//	GL_TRUE, projCameraWorld.v
+		//);
+
+		//// Draw complex object
+		//glDrawArrays(GL_TRIANGLES, 0, sizeof(kCubePositions));
+
+		//glUniformMatrix4fv(
+		//	0, 1,
+		//	GL_TRUE, projCameraWorld2.v
+		//);
+
+		//// Draw complex object
+		//glDrawArrays(GL_TRIANGLES, 0, sizeof(kCubePositions));
+
+		//// Reset state
+		//glBindVertexArray(0);
+		//glUseProgram(0);
+		//// End of drawing complex objects
+
+		// Prepare to draw using simple meshes (cylinder)
 		glUseProgram(prog.programId());
 
-		glBindVertexArray(complexObjectVAO);
+		// bind the cylinder's VAO
+		glBindVertexArray(simpleMeshVAO);
 		glUniformMatrix4fv(
 			0, 1,
-			GL_TRUE, projCameraWorld.v
+			GL_TRUE, projCameraWorld3.v
 		);
 
-		// Draw complex object
-		glDrawArrays(GL_TRIANGLES, 0, sizeof(kCubePositions));
-
-		glUniformMatrix4fv(
-			0, 1,
-			GL_TRUE, projCameraWorld2.v
-		);
-
-		// Draw complex object
-		glDrawArrays(GL_TRIANGLES, 0, sizeof(kCubePositions));
+		// draw the cylinder
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // wireframe mode
+		glDrawArrays(GL_TRIANGLES, 0, vertexCount);
 
 		// Reset state
 		glBindVertexArray(0);
 		glUseProgram(0);
+		// End of drawing using simple meshes
 
 		OGL_CHECKPOINT_DEBUG();
 		//####################### Display frame #######################
