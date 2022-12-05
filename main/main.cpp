@@ -34,6 +34,7 @@ namespace
 	struct State_
 	{
 		cameraControl camControl;
+		GLenum polygonMode;
 	};
 
 	void glfw_callback_error_( int, char const* );
@@ -307,66 +308,7 @@ int main() try
 		// General draw frame settings
 		glEnable(GL_DEPTH_TEST);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // wireframe mode
-
-		//// Prepare to draw the complex objects (2 cubes)
-		//glUseProgram(prog.programId());
-
-		//glBindVertexArray(complexObjectVAO);
-		//glUniformMatrix4fv(
-		//	0, 1,
-		//	GL_TRUE, projCameraWorld.v
-		//);
-
-		//// Draw complex object
-		//glDrawArrays(GL_TRIANGLES, 0, sizeof(kCubePositions));
-
-		//glUniformMatrix4fv(
-		//	0, 1,
-		//	GL_TRUE, projCameraWorld2.v
-		//);
-
-		//// Draw complex object
-		//glDrawArrays(GL_TRIANGLES, 0, sizeof(kCubePositions));
-
-		//// Reset state
-		//glBindVertexArray(0);
-		//glUseProgram(0);
-		//// End of drawing complex objects
-
-		//// Prepare to draw using simple meshes (cylinder)
-		//glUseProgram(prog.programId());
-
-		//// bind the cylinder's VAO
-		//glBindVertexArray(simpleMeshVAO);
-		//glUniformMatrix4fv(
-		//	0, 1,
-		//	GL_TRUE, projCameraWorld3.v
-		//);
-
-		//// draw the cylinder
-		//glDrawArrays(GL_TRIANGLES, 0, vertexCount);
-
-		//// Reset state
-		//glBindVertexArray(0);
-		//glUseProgram(0);
-
-		//// Prepare to draw using simple meshes (arrow)
-		//glUseProgram(prog.programId());
-
-		//// bind the arrow's VAO
-		//glBindVertexArray(arrowVAO);
-		//glUniformMatrix4fv(
-		//	0, 1,
-		//	GL_TRUE, projCameraWorld.v
-		//);
-
-		//// draw the arrow
-		//glDrawArrays(GL_TRIANGLES, 0, vertexCountArrow);
-
-		//// Reset state
-		//glBindVertexArray(0);
-		//glUseProgram(0);
+		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // wireframe mode
 
 		// Prepare to draw using simple meshes (armadillo)
 		glUseProgram(prog.programId());
@@ -427,6 +369,33 @@ namespace
 
 		// get state info
 		if( auto* state = static_cast<State_*>(glfwGetWindowUserPointer( aWindow )) ) {
+
+			// change polygon mode
+			if ( GLFW_KEY_P == aKey && GLFW_PRESS == aAction)
+			{
+				switch (state->polygonMode)
+				{
+				case GL_POINT:
+					{
+						state->polygonMode = GL_LINE; break;
+					}
+				case GL_LINE:
+					{
+						state->polygonMode = GL_FILL; break;
+					}
+				case GL_FILL:
+					{
+						state->polygonMode = GL_POINT; break;
+					}
+				default:
+					{
+						state->polygonMode = GL_LINE; break;
+					}
+				}
+				printf("polygon mode: %0xf\n", state->polygonMode);
+				glPolygonMode(GL_FRONT_AND_BACK, state->polygonMode);
+			}
+
 
 			// make camera active if SPACE pressed
 			if( GLFW_KEY_SPACE == aKey && GLFW_PRESS == aAction )
