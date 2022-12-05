@@ -335,7 +335,7 @@ namespace
 				state->camControl.cameraActive = !state->camControl.cameraActive;
 
 				if( state->camControl.cameraActive )
-					glfwSetInputMode( aWindow, GLFW_CURSOR, GLFW_CURSOR_HIDDEN );
+					glfwSetInputMode( aWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED );
 				else
 					glfwSetInputMode( aWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL );
 			}
