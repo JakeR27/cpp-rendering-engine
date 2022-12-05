@@ -266,8 +266,8 @@ int main() try
 		//####################### Draw frame #######################
 
 		// Prepare to draw
-		//glEnable(GL_DEPTH_TEST); // not working for some reason
-		glClear(GL_COLOR_BUFFER_BIT);
+		glEnable(GL_DEPTH_TEST); // not working for some reason
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glUseProgram(prog.programId());
 
 		glBindVertexArray(complexObjectVAO);
