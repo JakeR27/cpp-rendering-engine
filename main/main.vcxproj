@@ -95,6 +95,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="camera.hpp" />
     <ClInclude Include="complex_object.hpp" />
     <ClInclude Include="defaults.hpp" />
   </ItemGroup>
