@@ -10,7 +10,7 @@ SimpleMeshData concatenate( SimpleMeshData aM, SimpleMeshData const& aN )
 // VBO for positions and VBO for colours, combined into one VAO that we return
 GLuint create_vao( SimpleMeshData const& aMeshData )
 {
-	//TODO: implement create_vao to upload a SimpleMeshData instance to 2 VBOs, then use them to create a VAO
+	//DONE: implement create_vao to upload a SimpleMeshData instance to 2 VBOs, then use them to create a VAO
 	// Simple Mesh Position VBO
 	GLuint simpleMeshPositionVBO = 0;
 	glGenBuffers(1, &simpleMeshPositionVBO);

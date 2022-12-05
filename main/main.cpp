@@ -222,6 +222,25 @@ int main() try
 	GLuint simpleMeshVAO = create_vao(testCylinder);	// keep track of this, this is the cylinder's unique VAO object ID
 	std::size_t vertexCount = testCylinder.positions.size();	// vertex count will be used in glDrawArrays() later
 
+	// create an arrow using a cylinder and a cone
+	auto xcyl = make_cylinder(true, 16, { 1.f, 0.f, 0.f },
+		make_scaling(5.f, 0.1f, 0.1f)
+	);
+	auto xcone = make_cone(true, 16, { 0.f, 0.f, 0.f, },
+		make_scaling(1.f, 0.3f, 0.3f) * make_translation({ 5.f, 0.f, 0.f } )
+	);
+		
+	auto xarrow = concatenate(std::move(xcyl), xcone);
+	GLuint arrowVAO = create_vao(xarrow);
+	std::size_t vertexCountArrow = xarrow.positions.size();
+
+	// load an armadillo mesh
+	// our .objs will be in assets, pathed to as such
+	auto armadillo = load_wavefront_obj("assets/Armadillo.obj");
+	GLuint armadilloVAO = create_vao(armadillo);
+	std::size_t vertexCountArmadillo = armadillo.positions.size();
+
+
 	//####################### Main Loop #######################
 
 	// Main loop
@@ -284,6 +303,7 @@ int main() try
 		// General draw frame settings
 		glEnable(GL_DEPTH_TEST);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // wireframe mode
 
 		//// Prepare to draw the complex objects (2 cubes)
 		//glUseProgram(prog.programId());
@@ -310,19 +330,52 @@ int main() try
 		//glUseProgram(0);
 		//// End of drawing complex objects
 
-		// Prepare to draw using simple meshes (cylinder)
+		//// Prepare to draw using simple meshes (cylinder)
+		//glUseProgram(prog.programId());
+
+		//// bind the cylinder's VAO
+		//glBindVertexArray(simpleMeshVAO);
+		//glUniformMatrix4fv(
+		//	0, 1,
+		//	GL_TRUE, projCameraWorld3.v
+		//);
+
+		//// draw the cylinder
+		//glDrawArrays(GL_TRIANGLES, 0, vertexCount);
+
+		//// Reset state
+		//glBindVertexArray(0);
+		//glUseProgram(0);
+
+		//// Prepare to draw using simple meshes (arrow)
+		//glUseProgram(prog.programId());
+
+		//// bind the arrow's VAO
+		//glBindVertexArray(arrowVAO);
+		//glUniformMatrix4fv(
+		//	0, 1,
+		//	GL_TRUE, projCameraWorld.v
+		//);
+
+		//// draw the arrow
+		//glDrawArrays(GL_TRIANGLES, 0, vertexCountArrow);
+
+		//// Reset state
+		//glBindVertexArray(0);
+		//glUseProgram(0);
+
+		// Prepare to draw using simple meshes (armadillo)
 		glUseProgram(prog.programId());
 
-		// bind the cylinder's VAO
-		glBindVertexArray(simpleMeshVAO);
+		// bind the armadillos's VAO
+		glBindVertexArray(armadilloVAO);
 		glUniformMatrix4fv(
 			0, 1,
-			GL_TRUE, projCameraWorld3.v
+			GL_TRUE, projCameraWorld.v
 		);
 
-		// draw the cylinder
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // wireframe mode
-		glDrawArrays(GL_TRIANGLES, 0, vertexCount);
+		// draw the armadillo
+		glDrawArrays(GL_TRIANGLES, 0, vertexCountArmadillo);
 
 		// Reset state
 		glBindVertexArray(0);

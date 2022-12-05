@@ -29,7 +29,7 @@ SimpleMeshData make_cone( bool aCapped, std::size_t aSubdivs, Vec3f aColor, Mat4
 		prevZ = z;
 	}
 
-	// Generate vertices for the top and bottom caps of the cylinder
+	// Generate vertices for the top and bottom caps of the cone
 	if (aCapped) {
 		// begin again at the first vertex we drew
 		float prevY = std::cos(0.f);
