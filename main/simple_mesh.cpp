@@ -52,8 +52,8 @@ GLuint create_vao( SimpleMeshData const& aMeshData )
 
 	// Clean up simple mesh VBOs
 	// Note: these are not deleted fully, as the VAO holds a reference to them.
-	glDeleteBuffers(1, &simpleMeshColorVBO);
-	glDeleteBuffers(1, &simpleMeshPositionVBO);
+	/*glDeleteBuffers(1, &simpleMeshColorVBO);
+	glDeleteBuffers(1, &simpleMeshPositionVBO);*/
 
 	return simpleMeshVAO;
 }
