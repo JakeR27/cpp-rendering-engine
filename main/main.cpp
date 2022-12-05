@@ -28,6 +28,7 @@ namespace
 {
 	constexpr char const* kWindowTitle = "COMP3811 - Coursework 2";
 	constexpr float const kMouseSensitivity = 0.01f;
+	constexpr float const kMovementSensitivity = 2.f;
 	constexpr float const kPi = 3.1415962f;
 
 	struct State_
@@ -241,9 +242,9 @@ int main() try
 	std::size_t vertexCountArmadillo = armadillo.positions.size();
 
 
-	//####################### Main Loop #######################
+	auto lastTime = Clock::now();
 
-	// Main loop
+	//####################### Main Loop #######################
 	while( !glfwWindowShouldClose( window ) )
 	{
 		// Let GLFW process events
@@ -273,13 +274,16 @@ int main() try
 		}
 
 		//####################### Update state #######################
+		auto const now = Clock::now();
+		float dt = std::chrono::duration_cast<Secondsf>(now-lastTime).count();
+		lastTime = now;
 
-		if (state.camControl.actionForwards)	state.camControl.position += cam_forwards(&state.camControl);
-		if (state.camControl.actionBackwards)	state.camControl.position += cam_backwards(&state.camControl);
-		if (state.camControl.actionLeft)		state.camControl.position += cam_left(&state.camControl);
-		if (state.camControl.actionRight)		state.camControl.position += cam_right(&state.camControl);
-		if (state.camControl.actionUp)			state.camControl.position += cam_up(&state.camControl);
-		if (state.camControl.actionDown)		state.camControl.position += cam_down(&state.camControl);
+		if (state.camControl.actionForwards)	state.camControl.position += dt * kMovementSensitivity * cam_forwards(&state.camControl);
+		if (state.camControl.actionBackwards)	state.camControl.position += dt * kMovementSensitivity * cam_backwards(&state.camControl);
+		if (state.camControl.actionLeft)		state.camControl.position += dt * kMovementSensitivity * cam_left(&state.camControl);
+		if (state.camControl.actionRight)		state.camControl.position += dt * kMovementSensitivity * cam_right(&state.camControl);
+		if (state.camControl.actionUp)			state.camControl.position += dt * kMovementSensitivity * cam_up(&state.camControl);
+		if (state.camControl.actionDown)		state.camControl.position += dt * kMovementSensitivity * cam_down(&state.camControl);
 
 
 		Mat44f projection = make_perspective_projection(
