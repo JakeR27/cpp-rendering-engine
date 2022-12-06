@@ -23,6 +23,11 @@ GLuint create_vao( SimpleMeshData const& aMeshData )
 	glBindBuffer(GL_ARRAY_BUFFER, simpleMeshColorVBO);
 	glBufferData(GL_ARRAY_BUFFER, aMeshData.colors.size() * sizeof(Vec3f), aMeshData.colors.data(), GL_STATIC_DRAW);
 
+	GLuint simpleMeshNormalVBO = 0;
+	glGenBuffers(1, &simpleMeshNormalVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, simpleMeshNormalVBO);
+	glBufferData(GL_ARRAY_BUFFER, aMeshData.normals.size() * sizeof(Vec3f), aMeshData.colors.data(), GL_STATIC_DRAW);
+
 	// Bind VBO into VAO
 	GLuint simpleMeshVAO = 0;
 	glGenVertexArrays(1, &simpleMeshVAO);
@@ -45,6 +50,15 @@ GLuint create_vao( SimpleMeshData const& aMeshData )
 		0						// no offset
 	);
 	glEnableVertexAttribArray(1);
+
+	glBindBuffer(GL_ARRAY_BUFFER, simpleMeshNormalVBO);
+	glVertexAttribPointer(
+		2,						// loc 2 in vert shader
+		3, GL_FLOAT, GL_FALSE,	// 3 floats, not normalized
+		0,						// no padding
+		0						// no offset
+	);
+	glEnableVertexAttribArray(2);
 
 	// Reset state
 	glBindVertexArray(0);
