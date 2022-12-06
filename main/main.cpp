@@ -324,8 +324,14 @@ int main() try
 			1, &greenLightColor.x
 		);
 
-		glBindVertexArray(complexObjectVAO);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+		Vec3f kLightPosition = {1.f, 5.f, -1.f};
+		glUniform3fv(
+			2,
+			1, &kLightPosition.x
+		);
+
+		//glBindVertexArray(complexObjectVAO);
+		//glDrawArrays(GL_TRIANGLES, 0, 36);
 
 		// draw the armadillo
 		glBindVertexArray(armadilloVAO);
