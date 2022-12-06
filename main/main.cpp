@@ -23,6 +23,7 @@
 #include "cone.hpp"
 #include "cylinder.hpp"
 #include "loadobj.hpp"
+#include "point_light.hpp"
 
 namespace
 {
@@ -30,11 +31,14 @@ namespace
 	constexpr float const kMouseSensitivity = 0.01f;
 	constexpr float const kMovementSensitivity = 2.f;
 	constexpr float const kPi = 3.1415962f;
+	constexpr size_t kLightCount = 2;
 
 	struct State_
 	{
 		cameraControl camControl;
 		GLenum polygonMode;
+		pointLight sceneLights[kLightCount];
+		int currentLight = 0;
 	};
 
 	void glfw_callback_error_( int, char const* );
@@ -55,6 +59,7 @@ namespace
 
 int main() try
 {
+	//####################### SETUP #######################
 	// Initialize GLFW
 	if( GLFW_TRUE != glfwInit() )
 	{
@@ -113,6 +118,20 @@ int main() try
 	state.camControl.direction = {0.f , 0.f, 1.f};
 	state.camControl.forwards = {0.f , 0.f, 1.f};
 	state.camControl.up = {0.f , 1.0f, 0.f};
+
+	// Setup lights
+	//constexpr size_t kLightCount = 2;
+	//pointLight sceneLights[kLightCount];
+	state.sceneLights[0] = {
+		{1.f, 2.f, 1.f},
+		{1.f, 1.f, 0.f}
+	};
+
+	state.sceneLights[1] = {
+		{4.f, 4.f, 4.f},
+		{0.f, 1.f, 1.f}
+	};
+	
 
 	// Set up event handling
 	glfwSetKeyCallback( window, &glfw_callback_key_ );
@@ -299,8 +318,11 @@ int main() try
 		Mat44f world2camera = worldRotationX * worldRotationY *  worldTranslation;
 
 		Mat44f projCameraWorld = projection * world2camera;	// cube 1
-		Mat44f projCameraWorld2 = projection * world2camera * make_translation({3.f, 0.f, 0.f}); // cube 2
-		Mat44f projCameraWorld3 = projection * world2camera * make_translation({ -3.f, 0.f, 0.f }); // simple mesh cylinder
+		Mat44f projCameraWorld2 = projection * world2camera * make_translation({10.f, -1.f, 0.f}) * make_scaling(10.f, 1.f, 1.f) ;
+		Mat44f projCameraWorld3 = projection * world2camera * make_translation({0.f, -1.f, 10.f}) * make_scaling(1.f, 1.f, 10.f);
+
+		Mat44f projCameraWorld4 = projection * world2camera * make_translation(-state.sceneLights[0].position) * make_scaling(0.1f, 0.1f, 0.1f);
+		Mat44f projCameraWorld5 = projection * world2camera * make_translation(-state.sceneLights[1].position) * make_scaling(0.1f, 0.1f, 0.1f);
 
 		OGL_CHECKPOINT_DEBUG();
 		//####################### Draw frame #######################
@@ -317,25 +339,66 @@ int main() try
 			GL_TRUE, projCameraWorld.v
 		);
 
-		Vec3f whiteLightColor = {1.f, 1.f, 1.f};
-		Vec3f greenLightColor = {0.1f, 1.f, 0.2f};
 		glUniform3fv(
-			1,
-			1, &greenLightColor.x
+			1, 1,
+			&state.sceneLights[0].position.x
+		);
+		glUniform3fv(
+			2, 1,
+			&state.sceneLights[0].color.x
+		);
+		glUniform3fv(
+			3, 1,
+			&state.sceneLights[1].position.x
+		);
+		glUniform3fv(
+			4, 1,
+			&state.sceneLights[1].color.x
 		);
 
-		Vec3f kLightPosition = {1.f, 5.f, -1.f};
+		Vec3f camDir = cam_forwards(&state.camControl);
 		glUniform3fv(
-			2,
-			1, &kLightPosition.x
+			5,
+			1, &camDir.x
 		);
-
-		//glBindVertexArray(complexObjectVAO);
-		//glDrawArrays(GL_TRIANGLES, 0, 36);
-
+		
 		// draw the armadillo
 		glBindVertexArray(armadilloVAO);
 		glDrawArrays(GL_TRIANGLES, 0, vertexCountArmadillo);		
+
+		glUniformMatrix4fv(
+			0, 1,
+			GL_TRUE, projCameraWorld2.v
+		);
+
+		glBindVertexArray(complexObjectVAO);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		glUniformMatrix4fv(
+			0, 1,
+			GL_TRUE, projCameraWorld3.v
+		);
+
+		glBindVertexArray(complexObjectVAO);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		glUniformMatrix4fv(
+			0, 1,
+			GL_TRUE, projCameraWorld4.v
+		);
+
+		glBindVertexArray(complexObjectVAO);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		glUniformMatrix4fv(
+			0, 1,
+			GL_TRUE, projCameraWorld5.v
+		);
+
+		glBindVertexArray(complexObjectVAO);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+
 
 		// Reset state
 		glBindVertexArray(0);
@@ -407,6 +470,55 @@ namespace
 				}
 				printf("polygon mode: %0xf\n", state->polygonMode);
 				glPolygonMode(GL_FRONT_AND_BACK, state->polygonMode);
+			}
+
+			if ( GLFW_KEY_L == aKey && GLFW_PRESS == aAction)
+			{
+				switch (state->currentLight)
+				{
+					case 0:
+						{
+							state->currentLight = 1; break;
+						}
+					case 1:
+						{
+							state->currentLight = 0; break;
+						}
+					default:
+						{
+							state->currentLight = 0; break;
+						}
+				}
+			}
+
+			if ( GLFW_KEY_U == aKey && GLFW_PRESS == aAction)
+			{
+				state->sceneLights[state->currentLight].position.z += 0.5f;
+			}
+
+			if ( GLFW_KEY_J == aKey && GLFW_PRESS == aAction)
+			{
+				state->sceneLights[state->currentLight].position.z -= 0.5f;
+			}
+
+			if ( GLFW_KEY_H == aKey && GLFW_PRESS == aAction)
+			{
+				state->sceneLights[state->currentLight].position.x += 0.5f;
+			}
+
+			if ( GLFW_KEY_K == aKey && GLFW_PRESS == aAction)
+			{
+				state->sceneLights[state->currentLight].position.x -= 0.5f;
+			}
+
+			if ( GLFW_KEY_Y == aKey && GLFW_PRESS == aAction)
+			{
+				state->sceneLights[state->currentLight].position.y += 0.5f;
+			}
+
+			if ( GLFW_KEY_I == aKey && GLFW_PRESS == aAction)
+			{
+				state->sceneLights[state->currentLight].position.y -= 0.5f;
 			}
 
 
