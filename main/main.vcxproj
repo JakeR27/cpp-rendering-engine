@@ -101,6 +101,7 @@
     <ClInclude Include="cylinder.hpp" />
     <ClInclude Include="defaults.hpp" />
     <ClInclude Include="loadobj.hpp" />
+    <ClInclude Include="point_light.hpp" />
     <ClInclude Include="simple_mesh.hpp" />
   </ItemGroup>
   <ItemGroup>
