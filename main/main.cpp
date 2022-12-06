@@ -317,6 +317,13 @@ int main() try
 			GL_TRUE, projCameraWorld.v
 		);
 
+		Vec3f whiteLightColor = {1.f, 1.f, 1.f};
+		Vec3f greenLightColor = {0.1f, 1.f, 0.2f};
+		glUniform3fv(
+			1,
+			1, &greenLightColor.x
+		);
+
 		glBindVertexArray(complexObjectVAO);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
