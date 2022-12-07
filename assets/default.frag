@@ -1,7 +1,7 @@
 #version 430
 
 const float kAmbientStrength = 0.1;
-const float kDiffuseStrength = 0.3;
+const float kDiffuseStrength = 0.5;
 const float kSpecularStrength = 0.5;
 const float kShininess = 200.0;
 #define POINT_LIGHT_COUNT 2
@@ -34,7 +34,10 @@ vec3 calculate_pointLight_contribution(pointLight light) {
 
 	vec3 specularLightContribution = light.color * specularStrength * kSpecularStrength;
 
-	return (ambientLightContribution + diffuseLightContribution + specularLightContribution);
+	float dist = distance(light.position, v2fPosition);
+	float distanceContribution = 1.0 / (dist * dist);
+
+	return (ambientLightContribution + diffuseLightContribution + specularLightContribution) * distanceContribution;
 
 }
 

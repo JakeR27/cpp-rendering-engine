@@ -123,12 +123,12 @@ int main() try
 	//constexpr size_t kLightCount = 2;
 	//pointLight sceneLights[kLightCount];
 	state.sceneLights[0] = {
-		{1.f, 2.f, 1.f},
+		{0.f, 4.5f, 0.5f},
 		{1.f, 1.f, 0.f}
 	};
 
 	state.sceneLights[1] = {
-		{4.f, 4.f, 4.f},
+		{0.f, 1.5f, 0.5f},
 		{0.f, 1.f, 1.f}
 	};
 	
@@ -321,8 +321,8 @@ int main() try
 		Mat44f projCameraWorld2 = projection * world2camera * make_translation({10.f, -1.f, 0.f}) * make_scaling(10.f, 1.f, 1.f) ;
 		Mat44f projCameraWorld3 = projection * world2camera * make_translation({0.f, -1.f, 10.f}) * make_scaling(1.f, 1.f, 10.f);
 
-		Mat44f projCameraWorld4 = projection * world2camera * make_translation(-state.sceneLights[0].position) * make_scaling(0.1f, 0.1f, 0.1f);
-		Mat44f projCameraWorld5 = projection * world2camera * make_translation(-state.sceneLights[1].position) * make_scaling(0.1f, 0.1f, 0.1f);
+		Mat44f projCameraWorld4 = projection * world2camera * make_translation(state.sceneLights[0].position) * make_scaling(0.1f, 0.1f, 0.1f);
+		Mat44f projCameraWorld5 = projection * world2camera * make_translation(state.sceneLights[1].position) * make_scaling(0.1f, 0.1f, 0.1f);
 
 		OGL_CHECKPOINT_DEBUG();
 		//####################### Draw frame #######################
@@ -519,6 +519,11 @@ namespace
 			if ( GLFW_KEY_I == aKey && GLFW_PRESS == aAction)
 			{
 				state->sceneLights[state->currentLight].position.y -= 0.5f;
+			}
+
+			if ( GLFW_KEY_O == aKey && GLFW_PRESS == aAction)
+			{
+				printf("Light %d, pos: {%f, %f, %f}\n", state->currentLight, state->sceneLights[state->currentLight].position.x, state->sceneLights[state->currentLight].position.y, state->sceneLights[state->currentLight].position.z);
 			}
 
 
