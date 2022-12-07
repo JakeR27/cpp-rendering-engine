@@ -3,7 +3,7 @@
 const float kAmbientStrength = 0.1;
 const float kDiffuseStrength = 0.5;
 const float kSpecularStrength = 0.5;
-const float kShininess = 5;
+const float kShininess = 200;
 #define POINT_LIGHT_COUNT 2
 
 struct pointLight {
@@ -22,12 +22,12 @@ layout( location = 0 ) out vec3 oColor;
 
 
 vec3 calculate_pointLight_contribution(pointLight light) {
-	vec3 ambientLightContribution = light.color * kAmbientStrength * 0;
+	vec3 ambientLightContribution = light.color * kAmbientStrength;
 
 	vec3 lightDirection = normalize(light.position - v2fPosition);
 	float diffuseStrength = max(dot(v2fNormal, lightDirection), 0.0);
 
-	vec3 diffuseLightContribution = light.color * diffuseStrength * kDiffuseStrength * 0;
+	vec3 diffuseLightContribution = light.color * diffuseStrength * kDiffuseStrength;
 
 	vec3 reflectionDirection = reflect(-lightDirection, v2fNormal);
 	vec3 viewDirection = normalize(uCameraPosition - v2fPosition);
