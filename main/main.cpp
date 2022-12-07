@@ -356,10 +356,12 @@ int main() try
 			&state.sceneLights[1].color.x
 		);
 
-		Vec3f camDir = cam_forwards(&state.camControl);
-		glUniform3fv(
+		Vec3f camPos = state.camControl.position;
+		glUniform3f(
 			5,
-			1, &camDir.x
+			camPos.x,
+			camPos.y,
+			camPos.z
 		);
 		
 		// draw the armadillo
