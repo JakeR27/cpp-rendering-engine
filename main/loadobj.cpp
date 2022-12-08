@@ -33,9 +33,9 @@ SimpleMeshData load_wavefront_obj(char const* aPath)
 				});
 
 			ret.normals.emplace_back(Vec3f{
-				result.attributes.normals[idx.position_index * 3 + 0],
-				result.attributes.normals[idx.position_index * 3 + 1],
-				result.attributes.normals[idx.position_index * 3 + 2]
+				result.attributes.normals[idx.normal_index * 3 + 0],
+				result.attributes.normals[idx.normal_index * 3 + 1],
+				result.attributes.normals[idx.normal_index * 3 + 2]
 				});
 
 			// Always triangles, so we can find the face index by dividing the vertex index by three

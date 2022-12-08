@@ -26,7 +26,7 @@ GLuint create_vao( SimpleMeshData const& aMeshData )
 	GLuint simpleMeshNormalVBO = 0;
 	glGenBuffers(1, &simpleMeshNormalVBO);
 	glBindBuffer(GL_ARRAY_BUFFER, simpleMeshNormalVBO);
-	glBufferData(GL_ARRAY_BUFFER, aMeshData.normals.size() * sizeof(Vec3f), aMeshData.colors.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, aMeshData.normals.size() * sizeof(Vec3f), aMeshData.normals.data(), GL_STATIC_DRAW);
 
 	// Bind VBO into VAO
 	GLuint simpleMeshVAO = 0;
