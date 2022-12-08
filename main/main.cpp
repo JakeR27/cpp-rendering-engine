@@ -31,7 +31,7 @@ namespace
 	constexpr float const kMouseSensitivity = 0.01f;
 	constexpr float const kMovementSensitivity = 2.f;
 	constexpr float const kPi = 3.1415962f;
-	constexpr size_t kLightCount = 2;
+	constexpr size_t kLightCount = 3;
 
 	struct State_
 	{
@@ -134,14 +134,21 @@ int main() try
 
 	state.sceneLights[0] = {
 		{0.f, 4.5f, 0.5f},
-		{1.f, 1.f, 0.f}
+		{1.f, 1.f, 0.f},
+		1
 	};
 
 	state.sceneLights[1] = {
 		{0.75f, 3.25f, 0.5f},
-		{0.f, 1.f, 1.f}
+		{0.f, 1.f, 1.f},
+		1
 	};
-	
+
+	state.sceneLights[2] = {
+		{0.25f, 1.5f, 1.f},
+		{1.f, 0.1f, 0.1f},
+		1
+	};
 
 	// Set up event handling
 	glfwSetKeyCallback( window, &glfw_callback_key_ );
@@ -333,6 +340,7 @@ int main() try
 
 		Mat44f projCameraWorld4 = projection * world2camera * make_translation(state.sceneLights[0].position) * make_scaling(0.02f, 0.02f, 0.02f);
 		Mat44f projCameraWorld5 = projection * world2camera * make_translation(state.sceneLights[1].position) * make_scaling(0.02f, 0.02f, 0.02f);
+		Mat44f projCameraWorld6 = projection * world2camera * make_translation(state.sceneLights[2].position) * make_scaling(0.02f, 0.02f, 0.02f);
 
 		OGL_CHECKPOINT_DEBUG();
 		//####################### Draw frame #######################
@@ -357,18 +365,35 @@ int main() try
 			2, 1,
 			&state.sceneLights[0].color.x
 		);
-		glUniform3fv(
-			3, 1,
-			&state.sceneLights[1].position.x
+		glUniform1fv(
+			3, 1, &state.sceneLights[0].brightness
 		);
 		glUniform3fv(
 			4, 1,
+			&state.sceneLights[1].position.x
+		);
+		glUniform3fv(
+			5, 1,
 			&state.sceneLights[1].color.x
+		);
+		glUniform1f(
+			6, state.sceneLights[1].brightness
+		);
+		glUniform3fv(
+			7, 1,
+			&state.sceneLights[2].position.x
+		);
+		glUniform3fv(
+			8, 1,
+			&state.sceneLights[2].color.x
+		);
+		glUniform1f(
+			9, state.sceneLights[2].brightness
 		);
 
 		Vec3f camPos = state.camControl.position + cam_forwards(&state.camControl) *3;
 		glUniform3f(
-			5,
+			10,
 			camPos.x,
 			camPos.y,
 			camPos.z
@@ -405,6 +430,14 @@ int main() try
 		glUniformMatrix4fv(
 			0, 1,
 			GL_TRUE, projCameraWorld5.v
+		);
+
+		glBindVertexArray(complexObjectVAO);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		glUniformMatrix4fv(
+			0, 1,
+			GL_TRUE, projCameraWorld6.v
 		);
 
 		glBindVertexArray(complexObjectVAO);
@@ -488,17 +521,13 @@ namespace
 			{
 				switch (state->currentLight)
 				{
-					case 0:
-						{
-							state->currentLight = 1; break;
-						}
-					case 1:
+					case kLightCount-1:
 						{
 							state->currentLight = 0; break;
 						}
 					default:
 						{
-							state->currentLight = 0; break;
+							state->currentLight++; break;
 						}
 				}
 			}

@@ -1,16 +1,17 @@
 #version 430
 
-const float kA = 0.2;
-const float kD = 0.5;
-const float kS = 0.2;
+const float kA = 0.8;
+const float kD = 0.8;
+const float kS = 0.8;
 const float kAlphaPrime = 4;
 const float kAlpha = 4 * kAlphaPrime;
 const float kPI = 3.1415926;
-#define POINT_LIGHT_COUNT 2
+#define POINT_LIGHT_COUNT 3
 
 struct pointLight {
 	vec3 position;
 	vec3 color;
+	float brightness;
 };
 
 in vec3 v2fColor;
@@ -18,7 +19,7 @@ in vec3 v2fNormal;
 in vec3 v2fPosition;
 
 layout ( location = 1 ) uniform pointLight uPointLightData[POINT_LIGHT_COUNT];
-layout( location = 5 ) uniform vec3 uCameraPosition;
+layout( location = 10 ) uniform vec3 uCameraPosition;
 
 layout( location = 0 ) out vec3 oColor;
 
@@ -37,7 +38,7 @@ vec3 calculate_pointLight_contribution(pointLight light) {
 	//float specularTerm = max( dot(R, V), 0 );
 
 	//ambient
-	float ambient = kA;
+	float ambient = kA + (light.brightness * 0);
 
 	//diffuse
 	float diffuse = kD / kPI;
