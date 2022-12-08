@@ -190,7 +190,7 @@ int main() try
 	// Load shader program
 	ShaderProgram prog({
 		{ GL_VERTEX_SHADER, "assets/default.vert" },
-		{ GL_FRAGMENT_SHADER, "assets/default.frag" }
+		{ GL_FRAGMENT_SHADER, "assets/correct_blinn-phong.frag" }
 		});
 
 	// Other initialization & loading
@@ -366,7 +366,7 @@ int main() try
 			&state.sceneLights[1].color.x
 		);
 
-		Vec3f camPos = state.camControl.position;
+		Vec3f camPos = state.camControl.position + cam_forwards(&state.camControl) *3;
 		glUniform3f(
 			5,
 			camPos.x,
