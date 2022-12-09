@@ -30,6 +30,11 @@ int initObject(SceneObject *aObject, char const* aPath)
 	return 0;
 }
 
+void updateObject(SceneObject* aObject)
+{
+	create_vao(aObject->mesh, aObject->VAO);
+}
+
 void drawObject(const SceneObject* aObject, const Mat44f projCamera)
 {
 	Mat44f rotationTransform = make_rotation_z(aObject->rotation.z) * make_rotation_y(aObject->rotation.y) * make_rotation_x(aObject->rotation.x);
