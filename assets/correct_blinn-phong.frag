@@ -1,10 +1,10 @@
 #version 430
 
-const float kA = 0.8;
-const float kD = 0.8;
-const float kS = 0.8;
-const float kAlphaPrime = 4;
-const float kAlpha = 4 * kAlphaPrime;
+//const float kA = 0.8;
+//const float kD = 0.8;
+//const float kS = 0.8;
+//const float kAlphaPrime = 4;
+
 const float kPI = 3.1415926;
 #define POINT_LIGHT_COUNT 3
 
@@ -18,10 +18,18 @@ in vec3 v2fColor;
 in vec3 v2fNormal;
 in vec3 v2fPosition;
 
-layout ( location = 1 ) uniform pointLight uPointLightData[POINT_LIGHT_COUNT];
-layout( location = 10 ) uniform vec3 uCameraPosition;
+layout ( location = 2 ) uniform vec3 uCameraPosition;
+layout ( location = 3 ) uniform vec4 uMaterialData;
+layout ( location = 4 ) uniform pointLight uPointLightData[POINT_LIGHT_COUNT];
 
 layout( location = 0 ) out vec3 oColor;
+
+float kA = uMaterialData.x;
+float kD = uMaterialData.y;
+float kS = uMaterialData.z;
+float kE = uMaterialData.w;
+float kAlphaPrime = 4;
+float kAlpha = 4 * kAlphaPrime;
 
 
 vec3 calculate_pointLight_contribution(pointLight light) {
@@ -63,7 +71,8 @@ vec3 pointLightContribution() {
 
 void main()
 {
+	
+	oColor = (pointLightContribution() * v2fColor) + (kE * v2fColor);// * 0) + normalize(v2fNormal);
 	//oColor = normalize(v2fNormal);
-	oColor = pointLightContribution() * v2fColor;
 }
 

@@ -24,6 +24,7 @@
 #include "cylinder.hpp"
 #include "loadobj.hpp"
 #include "point_light.hpp"
+#include "scene_object.hpp"
 
 namespace
 {
@@ -274,9 +275,35 @@ int main() try
 
 	// load an armadillo mesh
 	// our .objs will be in assets, pathed to as such
-	auto armadillo = load_wavefront_obj("assets/Armadillo.obj");
+	/*auto armadillo = load_wavefront_obj("assets/Armadillo.obj");
 	GLuint armadilloVAO = create_vao(armadillo);
-	std::size_t vertexCountArmadillo = armadillo.positions.size();
+	std::size_t vertexCountArmadillo = armadillo.positions.size();*/
+
+	SceneObject armadilloObj;
+	initObject(&armadilloObj, "assets/Armadillo.obj");
+
+	SceneObject bulbObj;
+	initObject(&bulbObj, "assets/globe-sphere.obj");
+	bulbObj.scaling = {0.1f, 0.1f, 0.1f};
+	for (int i = 0; i < bulbObj.mesh.size; i++)
+	{
+		bulbObj.mesh.colors[i] = {1.f, 1.f, 1.f};
+	}
+	glBindVertexArray(bulbObj.VAO);
+
+	GLuint simpleMeshColorVBO = 0;
+	glGenBuffers(1, &simpleMeshColorVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, simpleMeshColorVBO);
+	glBufferData(GL_ARRAY_BUFFER, bulbObj.mesh.colors.size() * sizeof(Vec3f), bulbObj.mesh.colors.data(), GL_STATIC_DRAW);
+
+	glVertexAttribPointer(
+		1,						// loc 1 in vert shader
+		3, GL_FLOAT, GL_FALSE,	// 3 floats, not normalized
+		0,						// no padding
+		0						// no offset
+	);
+	glEnableVertexAttribArray(1);
+	glBindVertexArray(0);
 
 
 	auto lastTime = Clock::now();
@@ -338,9 +365,9 @@ int main() try
 		Mat44f projCameraWorld2 = projection * world2camera * make_translation({10.f, -1.f, 0.f}) * make_scaling(10.f, 1.f, 1.f) ;
 		Mat44f projCameraWorld3 = projection * world2camera * make_translation({0.f, -1.f, 10.f}) * make_scaling(1.f, 1.f, 10.f);
 
-		Mat44f projCameraWorld4 = projection * world2camera * make_translation(state.sceneLights[0].position) * make_scaling(0.02f, 0.02f, 0.02f);
-		Mat44f projCameraWorld5 = projection * world2camera * make_translation(state.sceneLights[1].position) * make_scaling(0.02f, 0.02f, 0.02f);
-		Mat44f projCameraWorld6 = projection * world2camera * make_translation(state.sceneLights[2].position) * make_scaling(0.02f, 0.02f, 0.02f);
+		Mat44f projCameraWorld4 = projection * world2camera *      make_translation(state.sceneLights[0].position) * make_scaling(0.02f, 0.02f, 0.02f);
+		Mat44f projCameraWorld5 = projection * world2camera *      make_translation(state.sceneLights[1].position) * make_scaling(0.02f, 0.02f, 0.02f);
+		Mat44f projCameraWorld6 = projection * world2camera *      make_translation(state.sceneLights[2].position) * make_scaling(0.02f, 0.02f, 0.02f);
 
 		OGL_CHECKPOINT_DEBUG();
 		//####################### Draw frame #######################
@@ -358,50 +385,64 @@ int main() try
 		);
 
 		glUniform3fv(
-			1, 1,
+			4, 1,
 			&state.sceneLights[0].position.x
 		);
 		glUniform3fv(
-			2, 1,
+			5, 1,
 			&state.sceneLights[0].color.x
 		);
 		glUniform1fv(
-			3, 1, &state.sceneLights[0].brightness
-		);
-		glUniform3fv(
-			4, 1,
-			&state.sceneLights[1].position.x
-		);
-		glUniform3fv(
-			5, 1,
-			&state.sceneLights[1].color.x
-		);
-		glUniform1f(
-			6, state.sceneLights[1].brightness
+			6, 1, &state.sceneLights[0].brightness
 		);
 		glUniform3fv(
 			7, 1,
-			&state.sceneLights[2].position.x
+			&state.sceneLights[1].position.x
 		);
 		glUniform3fv(
 			8, 1,
+			&state.sceneLights[1].color.x
+		);
+		glUniform1f(
+			9, state.sceneLights[1].brightness
+		);
+		glUniform3fv(
+			10, 1,
+			&state.sceneLights[2].position.x
+		);
+		glUniform3fv(
+			11, 1,
 			&state.sceneLights[2].color.x
 		);
 		glUniform1f(
-			9, state.sceneLights[2].brightness
+			12, state.sceneLights[2].brightness
 		);
 
 		Vec3f camPos = state.camControl.position + cam_forwards(&state.camControl) *3;
 		glUniform3f(
-			10,
+			2,
 			camPos.x,
 			camPos.y,
 			camPos.z
 		);
-		
+
+		// seetting material properties
+		glUniform4f(
+			3,
+			0.8f, 0.8f, 0.8f, 0.0f
+		);
+
+		// draw armadillo2
+		Vec3f pos1 = {0.f, 0.f, 0.f};
+		Vec3f pos2 = {4.f, 0.f, 0.f};
+		armadilloObj.position = pos1;
+		drawObject(&armadilloObj, projCameraWorld);
+		armadilloObj.position = pos2;
+		drawObject(&armadilloObj, projCameraWorld);
+
 		// draw the armadillo
-		glBindVertexArray(armadilloVAO);
-		glDrawArrays(GL_TRIANGLES, 0, vertexCountArmadillo);		
+		/*glBindVertexArray(armadilloVAO);
+		glDrawArrays(GL_TRIANGLES, 0, vertexCountArmadillo);	*/	
 
 		glUniformMatrix4fv(
 			0, 1,
@@ -419,29 +460,44 @@ int main() try
 		glBindVertexArray(complexObjectVAO);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
-		glUniformMatrix4fv(
+		// seetting material properties
+		glUniform4f(
+			3,
+			1.f, 1.f, 0.f, 0.f
+		);
+
+		bulbObj.position = state.sceneLights[0].position;
+		drawObject(&bulbObj, projCameraWorld);
+
+		bulbObj.position = state.sceneLights[1].position;
+		drawObject(&bulbObj, projCameraWorld);
+
+		bulbObj.position = state.sceneLights[2].position;
+		drawObject(&bulbObj, projCameraWorld);
+
+		/*glUniformMatrix4fv(
 			0, 1,
 			GL_TRUE, projCameraWorld4.v
 		);
 
 		glBindVertexArray(complexObjectVAO);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+		glDrawArrays(GL_TRIANGLES, 0, 36);*/
 
-		glUniformMatrix4fv(
-			0, 1,
-			GL_TRUE, projCameraWorld5.v
-		);
+		//glUniformMatrix4fv(
+		//	0, 1,
+		//	GL_TRUE, projCameraWorld5.v
+		//);
 
-		glBindVertexArray(complexObjectVAO);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+		//glBindVertexArray(complexObjectVAO);
+		//glDrawArrays(GL_TRIANGLES, 0, 36);
 
-		glUniformMatrix4fv(
-			0, 1,
-			GL_TRUE, projCameraWorld6.v
-		);
+		//glUniformMatrix4fv(
+		//	0, 1,
+		//	GL_TRUE, projCameraWorld6.v
+		//);
 
-		glBindVertexArray(complexObjectVAO);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+		//glBindVertexArray(complexObjectVAO);
+		//glDrawArrays(GL_TRIANGLES, 0, 36);
 
 
 
