@@ -23,6 +23,7 @@
 #include "cone.hpp"
 #include "cylinder.hpp"
 #include "loadobj.hpp"
+#include "point_light.hpp"
 
 namespace
 {
@@ -30,11 +31,14 @@ namespace
 	constexpr float const kMouseSensitivity = 0.01f;
 	constexpr float const kMovementSensitivity = 2.f;
 	constexpr float const kPi = 3.1415962f;
+	constexpr size_t kLightCount = 3;
 
 	struct State_
 	{
 		cameraControl camControl;
 		GLenum polygonMode;
+		pointLight sceneLights[kLightCount];
+		int currentLight = 0;
 	};
 
 	void glfw_callback_error_( int, char const* );
@@ -55,6 +59,7 @@ namespace
 
 int main() try
 {
+	//####################### SETUP #######################
 	// Initialize GLFW
 	if( GLFW_TRUE != glfwInit() )
 	{
@@ -114,6 +119,37 @@ int main() try
 	state.camControl.forwards = {0.f , 0.f, 1.f};
 	state.camControl.up = {0.f , 1.0f, 0.f};
 
+	// Setup lights
+	//constexpr size_t kLightCount = 2;
+	//pointLight sceneLights[kLightCount];
+	/*state.sceneLights[0] = {
+		{0.f, 4.5f, 0.5f},
+		{1.f, 1.f, 0.f}
+	};
+
+	state.sceneLights[1] = {
+		{0.f, 1.5f, 0.5f},
+		{0.f, 1.f, 1.f}
+	};*/
+
+	state.sceneLights[0] = {
+		{0.f, 4.5f, 0.5f},
+		{1.f, 1.f, 0.f},
+		1
+	};
+
+	state.sceneLights[1] = {
+		{0.75f, 3.25f, 0.5f},
+		{0.f, 1.f, 1.f},
+		1
+	};
+
+	state.sceneLights[2] = {
+		{0.25f, 1.5f, 1.f},
+		{1.f, 0.1f, 0.1f},
+		1
+	};
+
 	// Set up event handling
 	glfwSetKeyCallback( window, &glfw_callback_key_ );
 	glfwSetCursorPosCallback( window, &glfw_callback_motion_ );
@@ -161,7 +197,7 @@ int main() try
 	// Load shader program
 	ShaderProgram prog({
 		{ GL_VERTEX_SHADER, "assets/default.vert" },
-		{ GL_FRAGMENT_SHADER, "assets/default.frag" }
+		{ GL_FRAGMENT_SHADER, "assets/correct_blinn-phong.frag" }
 		});
 
 	// Other initialization & loading
@@ -299,8 +335,12 @@ int main() try
 		Mat44f world2camera = worldRotationX * worldRotationY *  worldTranslation;
 
 		Mat44f projCameraWorld = projection * world2camera;	// cube 1
-		Mat44f projCameraWorld2 = projection * world2camera * make_translation({3.f, 0.f, 0.f}); // cube 2
-		Mat44f projCameraWorld3 = projection * world2camera * make_translation({ -3.f, 0.f, 0.f }); // simple mesh cylinder
+		Mat44f projCameraWorld2 = projection * world2camera * make_translation({10.f, -1.f, 0.f}) * make_scaling(10.f, 1.f, 1.f) ;
+		Mat44f projCameraWorld3 = projection * world2camera * make_translation({0.f, -1.f, 10.f}) * make_scaling(1.f, 1.f, 10.f);
+
+		Mat44f projCameraWorld4 = projection * world2camera * make_translation(state.sceneLights[0].position) * make_scaling(0.02f, 0.02f, 0.02f);
+		Mat44f projCameraWorld5 = projection * world2camera * make_translation(state.sceneLights[1].position) * make_scaling(0.02f, 0.02f, 0.02f);
+		Mat44f projCameraWorld6 = projection * world2camera * make_translation(state.sceneLights[2].position) * make_scaling(0.02f, 0.02f, 0.02f);
 
 		OGL_CHECKPOINT_DEBUG();
 		//####################### Draw frame #######################
@@ -317,12 +357,93 @@ int main() try
 			GL_TRUE, projCameraWorld.v
 		);
 
-		glBindVertexArray(complexObjectVAO);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+		glUniform3fv(
+			1, 1,
+			&state.sceneLights[0].position.x
+		);
+		glUniform3fv(
+			2, 1,
+			&state.sceneLights[0].color.x
+		);
+		glUniform1fv(
+			3, 1, &state.sceneLights[0].brightness
+		);
+		glUniform3fv(
+			4, 1,
+			&state.sceneLights[1].position.x
+		);
+		glUniform3fv(
+			5, 1,
+			&state.sceneLights[1].color.x
+		);
+		glUniform1f(
+			6, state.sceneLights[1].brightness
+		);
+		glUniform3fv(
+			7, 1,
+			&state.sceneLights[2].position.x
+		);
+		glUniform3fv(
+			8, 1,
+			&state.sceneLights[2].color.x
+		);
+		glUniform1f(
+			9, state.sceneLights[2].brightness
+		);
 
+		Vec3f camPos = state.camControl.position + cam_forwards(&state.camControl) *3;
+		glUniform3f(
+			10,
+			camPos.x,
+			camPos.y,
+			camPos.z
+		);
+		
 		// draw the armadillo
 		glBindVertexArray(armadilloVAO);
 		glDrawArrays(GL_TRIANGLES, 0, vertexCountArmadillo);		
+
+		glUniformMatrix4fv(
+			0, 1,
+			GL_TRUE, projCameraWorld2.v
+		);
+
+		glBindVertexArray(complexObjectVAO);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		glUniformMatrix4fv(
+			0, 1,
+			GL_TRUE, projCameraWorld3.v
+		);
+
+		glBindVertexArray(complexObjectVAO);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		glUniformMatrix4fv(
+			0, 1,
+			GL_TRUE, projCameraWorld4.v
+		);
+
+		glBindVertexArray(complexObjectVAO);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		glUniformMatrix4fv(
+			0, 1,
+			GL_TRUE, projCameraWorld5.v
+		);
+
+		glBindVertexArray(complexObjectVAO);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		glUniformMatrix4fv(
+			0, 1,
+			GL_TRUE, projCameraWorld6.v
+		);
+
+		glBindVertexArray(complexObjectVAO);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+
 
 		// Reset state
 		glBindVertexArray(0);
@@ -394,6 +515,56 @@ namespace
 				}
 				printf("polygon mode: %0xf\n", state->polygonMode);
 				glPolygonMode(GL_FRONT_AND_BACK, state->polygonMode);
+			}
+
+			if ( GLFW_KEY_L == aKey && GLFW_PRESS == aAction)
+			{
+				switch (state->currentLight)
+				{
+					case kLightCount-1:
+						{
+							state->currentLight = 0; break;
+						}
+					default:
+						{
+							state->currentLight++; break;
+						}
+				}
+			}
+
+			if ( GLFW_KEY_U == aKey && GLFW_PRESS == aAction)
+			{
+				state->sceneLights[state->currentLight].position.z += 0.25f;
+			}
+
+			if ( GLFW_KEY_J == aKey && GLFW_PRESS == aAction)
+			{
+				state->sceneLights[state->currentLight].position.z -= 0.25f;
+			}
+
+			if ( GLFW_KEY_H == aKey && GLFW_PRESS == aAction)
+			{
+				state->sceneLights[state->currentLight].position.x += 0.25f;
+			}
+
+			if ( GLFW_KEY_K == aKey && GLFW_PRESS == aAction)
+			{
+				state->sceneLights[state->currentLight].position.x -= 0.25f;
+			}
+
+			if ( GLFW_KEY_Y == aKey && GLFW_PRESS == aAction)
+			{
+				state->sceneLights[state->currentLight].position.y += 0.25f;
+			}
+
+			if ( GLFW_KEY_I == aKey && GLFW_PRESS == aAction)
+			{
+				state->sceneLights[state->currentLight].position.y -= 0.25f;
+			}
+
+			if ( GLFW_KEY_O == aKey && GLFW_PRESS == aAction)
+			{
+				printf("Light %d, pos: {%f, %f, %f}\n", state->currentLight, state->sceneLights[state->currentLight].position.x, state->sceneLights[state->currentLight].position.y, state->sceneLights[state->currentLight].position.z);
 			}
 
 

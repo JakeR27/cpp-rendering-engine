@@ -68,6 +68,6 @@ inline void cam_action_reset(cameraControl* camera)
 	camera->actionRight = false;
 	camera->actionUp = false;
 	camera->actionDown = false;
-
 }
+
 #endif // CAMERA_CONTROL
