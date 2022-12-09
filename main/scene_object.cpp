@@ -16,7 +16,8 @@ int initObject(SceneObject *aObject, char const* aPath)
 		aObject->mesh = load_wavefront_obj(aObject->filepath);
 	} catch  (const std::exception& ex)
 	{
-		printf("Error initialising object! Failed to load mesh from file");
+		printf("Error: %s\n", ex.what());
+		printf("Error initialising object! Failed to load mesh from file: %s\n", aPath);
 		return -1;
 	}
 
@@ -37,6 +38,8 @@ void updateObject(SceneObject* aObject)
 
 void drawObject(const SceneObject* aObject, const Mat44f projCamera)
 {
+	if (aObject->_initialised == false) return;
+
 	Mat44f rotationTransform = make_rotation_z(aObject->rotation.z) * make_rotation_y(aObject->rotation.y) * make_rotation_x(aObject->rotation.x);
 	Mat44f modelTransform = make_translation(aObject->position) * make_scaling(aObject->scaling.x, aObject->scaling.y, aObject->scaling.z) * rotationTransform;
 	Mat44f finalTransform = projCamera * modelTransform;
