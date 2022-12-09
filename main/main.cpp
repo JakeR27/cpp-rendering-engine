@@ -24,6 +24,7 @@
 #include "cylinder.hpp"
 #include "loadobj.hpp"
 #include "point_light.hpp"
+#include "scene_object.hpp"
 
 namespace
 {
@@ -244,40 +245,21 @@ int main() try
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	// Clean up buffers
-	// Note: these are not deleted fully, as the VAO holds a reference to them.
-	/*glDeleteBuffers(1, &complexObjectColorVBO);
-	glDeleteBuffers(1, &complexObjectPositionVBO);*/
 
 	OGL_CHECKPOINT_ALWAYS();
+	
+	SceneObject armadilloObj;
+	initObject(&armadilloObj, "assets/Armadillo.obj");
 
-	//// Simple Mesh VBO and VAO creation using the vao_create() function
-	//// this test cylinder has been scaled and rotated
-	//auto testCylinder = make_cylinder(true, 16, { 0.f, 1.f, 0.f },
-	//	make_rotation_z(3.141592f / 4.f) *
-	//	make_scaling(5.f, 0.5f, 0.5f) // scale X by 5, Y and Z by 0.1
-	//);
-	//GLuint simpleMeshVAO = create_vao(testCylinder);	// keep track of this, this is the cylinder's unique VAO object ID
-	//std::size_t vertexCount = testCylinder.positions.size();	// vertex count will be used in glDrawArrays() later
+	SceneObject bulbObj;
+	initObject(&bulbObj, "assets/globe-sphere.obj");
 
-	//// create an arrow using a cylinder and a cone
-	//auto xcyl = make_cylinder(true, 16, { 1.f, 0.f, 0.f },
-	//	make_scaling(5.f, 0.1f, 0.1f)
-	//);
-	//auto xcone = make_cone(true, 16, { 0.f, 0.f, 0.f, },
-	//	make_scaling(1.f, 0.3f, 0.3f) * make_translation({ 5.f, 0.f, 0.f } )
-	//);
-	//	
-	//auto xarrow = concatenate(std::move(xcyl), xcone);
-	//GLuint arrowVAO = create_vao(xarrow);
-	//std::size_t vertexCountArrow = xarrow.positions.size();
-
-	// load an armadillo mesh
-	// our .objs will be in assets, pathed to as such
-	auto armadillo = load_wavefront_obj("assets/Armadillo.obj");
-	GLuint armadilloVAO = create_vao(armadillo);
-	std::size_t vertexCountArmadillo = armadillo.positions.size();
-
+	bulbObj.scaling = {0.1f, 0.1f, 0.1f};
+	for (int i = 0; i < bulbObj.mesh.size; i++)
+	{
+		bulbObj.mesh.colors[i] = {1.f, 1.f, 1.f};
+	}
+	updateObject(&bulbObj);
 
 	auto lastTime = Clock::now();
 
@@ -338,10 +320,6 @@ int main() try
 		Mat44f projCameraWorld2 = projection * world2camera * make_translation({10.f, -1.f, 0.f}) * make_scaling(10.f, 1.f, 1.f) ;
 		Mat44f projCameraWorld3 = projection * world2camera * make_translation({0.f, -1.f, 10.f}) * make_scaling(1.f, 1.f, 10.f);
 
-		Mat44f projCameraWorld4 = projection * world2camera * make_translation(state.sceneLights[0].position) * make_scaling(0.02f, 0.02f, 0.02f);
-		Mat44f projCameraWorld5 = projection * world2camera * make_translation(state.sceneLights[1].position) * make_scaling(0.02f, 0.02f, 0.02f);
-		Mat44f projCameraWorld6 = projection * world2camera * make_translation(state.sceneLights[2].position) * make_scaling(0.02f, 0.02f, 0.02f);
-
 		OGL_CHECKPOINT_DEBUG();
 		//####################### Draw frame #######################
 
@@ -358,50 +336,61 @@ int main() try
 		);
 
 		glUniform3fv(
-			1, 1,
+			4, 1,
 			&state.sceneLights[0].position.x
 		);
 		glUniform3fv(
-			2, 1,
+			5, 1,
 			&state.sceneLights[0].color.x
 		);
 		glUniform1fv(
-			3, 1, &state.sceneLights[0].brightness
-		);
-		glUniform3fv(
-			4, 1,
-			&state.sceneLights[1].position.x
-		);
-		glUniform3fv(
-			5, 1,
-			&state.sceneLights[1].color.x
-		);
-		glUniform1f(
-			6, state.sceneLights[1].brightness
+			6, 1, &state.sceneLights[0].brightness
 		);
 		glUniform3fv(
 			7, 1,
-			&state.sceneLights[2].position.x
+			&state.sceneLights[1].position.x
 		);
 		glUniform3fv(
 			8, 1,
+			&state.sceneLights[1].color.x
+		);
+		glUniform1f(
+			9, state.sceneLights[1].brightness
+		);
+		glUniform3fv(
+			10, 1,
+			&state.sceneLights[2].position.x
+		);
+		glUniform3fv(
+			11, 1,
 			&state.sceneLights[2].color.x
 		);
 		glUniform1f(
-			9, state.sceneLights[2].brightness
+			12, state.sceneLights[2].brightness
 		);
 
 		Vec3f camPos = state.camControl.position + cam_forwards(&state.camControl) *3;
 		glUniform3f(
-			10,
+			2,
 			camPos.x,
 			camPos.y,
 			camPos.z
 		);
-		
-		// draw the armadillo
-		glBindVertexArray(armadilloVAO);
-		glDrawArrays(GL_TRIANGLES, 0, vertexCountArmadillo);		
+
+		// seetting material properties
+		glUniform4f(
+			3,
+			0.8f, 0.8f, 0.8f, 0.0f
+		);
+
+		// draw armadillo2
+		Vec3f pos1 = {0.f, 0.f, 0.f};
+		Vec3f pos2 = {4.f, 0.f, 0.f};
+		armadilloObj.position = pos1;
+		drawObject(&armadilloObj, projCameraWorld);
+		armadilloObj.position = pos2;
+		drawObject(&armadilloObj, projCameraWorld);
+
 
 		glUniformMatrix4fv(
 			0, 1,
@@ -419,31 +408,20 @@ int main() try
 		glBindVertexArray(complexObjectVAO);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
-		glUniformMatrix4fv(
-			0, 1,
-			GL_TRUE, projCameraWorld4.v
+		// seetting material properties
+		glUniform4f(
+			3,
+			1.f, 1.f, 0.f, 0.f
 		);
 
-		glBindVertexArray(complexObjectVAO);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+		bulbObj.position = state.sceneLights[0].position;
+		drawObject(&bulbObj, projCameraWorld);
 
-		glUniformMatrix4fv(
-			0, 1,
-			GL_TRUE, projCameraWorld5.v
-		);
+		bulbObj.position = state.sceneLights[1].position;
+		drawObject(&bulbObj, projCameraWorld);
 
-		glBindVertexArray(complexObjectVAO);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-
-		glUniformMatrix4fv(
-			0, 1,
-			GL_TRUE, projCameraWorld6.v
-		);
-
-		glBindVertexArray(complexObjectVAO);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-
-
+		bulbObj.position = state.sceneLights[2].position;
+		drawObject(&bulbObj, projCameraWorld);
 
 		// Reset state
 		glBindVertexArray(0);

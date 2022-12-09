@@ -49,5 +49,6 @@ SimpleMeshData load_wavefront_obj(char const* aPath)
 
 		}
 	}
+	ret.size = ret.positions.size();
 	return ret;
 }
