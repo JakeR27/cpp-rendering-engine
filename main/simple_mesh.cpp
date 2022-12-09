@@ -8,7 +8,7 @@ SimpleMeshData concatenate( SimpleMeshData aM, SimpleMeshData const& aN )
 }
 
 // VBO for positions and VBO for colours, combined into one VAO that we return
-GLuint create_vao( SimpleMeshData const& aMeshData )
+GLuint create_vao( SimpleMeshData const& aMeshData, std::optional<GLuint> VAO)
 {
 	//DONE: implement create_vao to upload a SimpleMeshData instance to 2 VBOs, then use them to create a VAO
 	// Simple Mesh Position VBO
@@ -30,8 +30,15 @@ GLuint create_vao( SimpleMeshData const& aMeshData )
 
 	// Bind VBO into VAO
 	GLuint simpleMeshVAO = 0;
-	glGenVertexArrays(1, &simpleMeshVAO);
-	glBindVertexArray(simpleMeshVAO);
+	if (VAO)
+	{
+		glBindVertexArray(*VAO);
+	}
+	else 
+	{
+		glGenVertexArrays(1, &simpleMeshVAO);
+		glBindVertexArray(simpleMeshVAO);
+	}
 
 	glBindBuffer(GL_ARRAY_BUFFER, simpleMeshPositionVBO);
 	glVertexAttribPointer(
