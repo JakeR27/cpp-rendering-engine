@@ -254,28 +254,12 @@ int main() try
 	SceneObject bulbObj;
 	initObject(&bulbObj, "assets/globe-sphere.obj");
 
-	// THIS FOLLOWING SECTION IS UGLY
 	bulbObj.scaling = {0.1f, 0.1f, 0.1f};
 	for (int i = 0; i < bulbObj.mesh.size; i++)
 	{
 		bulbObj.mesh.colors[i] = {1.f, 1.f, 1.f};
 	}
-	glBindVertexArray(bulbObj.VAO);
-
-	GLuint simpleMeshColorVBO = 0;
-	glGenBuffers(1, &simpleMeshColorVBO);
-	glBindBuffer(GL_ARRAY_BUFFER, simpleMeshColorVBO);
-	glBufferData(GL_ARRAY_BUFFER, bulbObj.mesh.colors.size() * sizeof(Vec3f), bulbObj.mesh.colors.data(), GL_STATIC_DRAW);
-
-	glVertexAttribPointer(
-		1,						// loc 1 in vert shader
-		3, GL_FLOAT, GL_FALSE,	// 3 floats, not normalized
-		0,						// no padding
-		0						// no offset
-	);
-	glEnableVertexAttribArray(1);
-	glBindVertexArray(0);
-
+	updateObject(&bulbObj);
 
 	auto lastTime = Clock::now();
 
