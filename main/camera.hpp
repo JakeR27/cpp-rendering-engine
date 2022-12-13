@@ -22,52 +22,61 @@ typedef struct _cameraControl
 		} cameraControl;
 
 // Vector to move camera to the right by 1 unit
-inline Vec3f cam_right(const cameraControl* camera)
+inline Vec3f cam_right(const cameraControl* aCamera)
 {
-	Vec4f dir = make_rotation_y(-camera->phi) * Vec4f{camera->forwards.x, camera->forwards.y, camera->forwards.z, 1.0f};
-	return normalize(cross({dir.x, dir.y, dir.z}, camera->up));
+	Vec4f dir = make_rotation_y(-aCamera->phi) * Vec4f{aCamera->forwards.x, aCamera->forwards.y, aCamera->forwards.z, 1.0f};
+	return normalize(cross({dir.x, dir.y, dir.z}, aCamera->up));
 	
 }
 
-// Vector to move camera to the left by 1 unit
-inline Vec3f cam_left(const cameraControl* camera)
+// Vector to move aCamera to the left by 1 unit
+inline Vec3f cam_left(const cameraControl* aCamera)
 {
-	return -cam_right(camera);
+	return -cam_right(aCamera);
 }
 
 // Vector to move camera up by 1 unit
-inline Vec3f cam_up(const cameraControl* camera)
+inline Vec3f cam_up(const cameraControl* aCamera)
 {
-	return normalize(camera->up);
+	return normalize(aCamera->up);
 }
 
 // Vector to move camera down by 1 unit
-inline Vec3f cam_down(const cameraControl* camera)
+inline Vec3f cam_down(const cameraControl* aCamera)
 {
-	return -normalize(camera->up);
+	return -normalize(aCamera->up);
 }
 
 // Vector to move camera forwards by 1 unit
-inline Vec3f cam_forwards(const cameraControl* camera)
+inline Vec3f cam_forwards(const cameraControl* aCamera)
 {
-	Vec4f dir = make_rotation_y(-camera->phi) * Vec4f{camera->forwards.x, camera->forwards.y, camera->forwards.z, 1.0f};
+	Vec4f dir = make_rotation_y(-aCamera->phi) * Vec4f{aCamera->forwards.x, aCamera->forwards.y, aCamera->forwards.z, 1.0f};
 	return normalize({dir.x, dir.y, dir.z});
 }
 
 // Vector to move camera backwards by 1 unit
-inline Vec3f cam_backwards(const cameraControl* camera)
+inline Vec3f cam_backwards(const cameraControl* aCamera)
 {
-	return -cam_forwards(camera);
+	return -cam_forwards(aCamera);
 }
 
-inline void cam_action_reset(cameraControl* camera)
+inline void cam_action_reset(cameraControl* aCamera)
 {
-	camera->actionForwards = false;
-	camera->actionBackwards = false;
-	camera->actionLeft = false;
-	camera->actionRight = false;
-	camera->actionUp = false;
-	camera->actionDown = false;
+	aCamera->actionForwards = false;
+	aCamera->actionBackwards = false;
+	aCamera->actionLeft = false;
+	aCamera->actionRight = false;
+	aCamera->actionUp = false;
+	aCamera->actionDown = false;
 }
+
+inline void cam_toggle(cameraControl* aCamera)
+{
+	aCamera->cameraActive = !aCamera->cameraActive;
+}
+
+void cam_handle_key(cameraControl* aCamera, int aKey, int aAction);
+
+void cam_handle_mouse(cameraControl*, const float, double, double);
 
 #endif // CAMERA_CONTROL

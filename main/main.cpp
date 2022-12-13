@@ -560,7 +560,7 @@ namespace
 			// make camera active if SPACE pressed
 			if( GLFW_KEY_SPACE == aKey && GLFW_PRESS == aAction )
 			{
-				state->camControl.cameraActive = !state->camControl.cameraActive;
+				cam_toggle(&state->camControl);
 
 				if( state->camControl.cameraActive ) 
 				{
@@ -574,51 +574,7 @@ namespace
 			}
 
 			// Camera controls if camera is active
-			if( state->camControl.cameraActive )
-			{
-				if( GLFW_KEY_W == aKey )
-				{
-					if( GLFW_PRESS == aAction )
-						state->camControl.actionForwards = true;
-					else if( GLFW_RELEASE == aAction )
-						state->camControl.actionForwards = false;
-				}
-				else if( GLFW_KEY_S == aKey )
-				{
-					if( GLFW_PRESS == aAction )
-						state->camControl.actionBackwards = true;
-					else if( GLFW_RELEASE == aAction )
-						state->camControl.actionBackwards = false;
-				}
-				else if( GLFW_KEY_A == aKey )
-				{
-					if( GLFW_PRESS == aAction )
-						state->camControl.actionLeft = true;
-					else if( GLFW_RELEASE == aAction )
-						state->camControl.actionLeft = false;
-				}
-				else if( GLFW_KEY_D == aKey )
-				{
-					if( GLFW_PRESS == aAction )
-						state->camControl.actionRight = true;
-					else if( GLFW_RELEASE == aAction )
-						state->camControl.actionRight = false;
-				}
-				else if( GLFW_KEY_Q == aKey )
-				{
-					if( GLFW_PRESS == aAction )
-						state->camControl.actionUp = true;
-					else if( GLFW_RELEASE == aAction )
-						state->camControl.actionUp = false;
-				}
-				else if( GLFW_KEY_E == aKey )
-				{
-					if( GLFW_PRESS == aAction )
-						state->camControl.actionDown = true;
-					else if( GLFW_RELEASE == aAction )
-						state->camControl.actionDown = false;
-				}
-			}
+			cam_handle_key(&state->camControl, aKey, aAction);
 		}
 		
 	}
@@ -627,25 +583,26 @@ namespace
 	{
 		if( auto* state = static_cast<State_*>(glfwGetWindowUserPointer( aWindow )) )
 		{
-			if( state->camControl.cameraActive )
-			{
-				auto const dx = float(aX-state->camControl.lastX);
-				auto const dy = float(aY-state->camControl.lastY);
+			//if( state->camControl.cameraActive )
+			//{
+			//	auto const dx = float(aX-state->camControl.lastX);
+			//	auto const dy = float(aY-state->camControl.lastY);
 
-				state->camControl.phi += dx*kMouseSensitivity;
-				
-				state->camControl.theta += dy*kMouseSensitivity;
-				if( state->camControl.theta > kPi/2.f )
-					state->camControl.theta = kPi/2.f;
-				else if( state->camControl.theta < -kPi/2.f )
-					state->camControl.theta = -kPi/2.f;
-			}
+			//	state->camControl.phi += dx*kMouseSensitivity;
+			//	
+			//	state->camControl.theta += dy*kMouseSensitivity;
+			//	if( state->camControl.theta > kPi/2.f )
+			//		state->camControl.theta = kPi/2.f;
+			//	else if( state->camControl.theta < -kPi/2.f )
+			//		state->camControl.theta = -kPi/2.f;
+			//}
 
-			//printf("camera: theta: %f, phi: %f\n", state->camControl.theta, state->camControl.phi);
+			////printf("camera: theta: %f, phi: %f\n", state->camControl.theta, state->camControl.phi);
 
 
-			state->camControl.lastX = float(aX);
-			state->camControl.lastY = float(aY);
+			//state->camControl.lastX = float(aX);
+			//state->camControl.lastY = float(aY);
+			cam_handle_mouse(&state->camControl, kMouseSensitivity, aX, aY);
 		}
 	}
 }

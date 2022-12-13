@@ -38,6 +38,7 @@ SimpleMeshData load_wavefront_obj(char const* aPath)
 				result.attributes.normals[idx.normal_index * 3 + 2]
 				});
 
+
 			// Always triangles, so we can find the face index by dividing the vertex index by three
 			auto const& mat = result.materials[shape.mesh.material_ids[i / 3]];
 			// Just replicate the material ambient color for each vertex... 

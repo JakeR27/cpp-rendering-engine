@@ -106,6 +106,7 @@
     <ClInclude Include="simple_mesh.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="camera.cpp" />
     <ClCompile Include="cone.cpp" />
     <ClCompile Include="cylinder.cpp" />
     <ClCompile Include="loadobj.cpp" />
