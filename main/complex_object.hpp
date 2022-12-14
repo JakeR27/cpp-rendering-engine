@@ -91,6 +91,50 @@ constexpr float const kCubeColors[] = {
 	+0.f, +1.f, +1.f
 };
 
+constexpr float const kCubeTextureCoord[] = {
+	1.0f, 1.0f,
+	0.0f, 1.0f,
+	0.0f, 0.0f,
+	1.0f, 1.0f,
+	0.0f, 0.0f,
+	1.0f, 0.0f,
+
+	1.0f, 1.0f,
+	0.0f, 1.0f,
+	0.0f, 0.0f,
+	1.0f, 1.0f,
+	0.0f, 0.0f,
+	1.0f, 0.0f,
+
+	1.0f, 1.0f,
+	0.0f, 1.0f,
+	0.0f, 0.0f,
+	1.0f, 1.0f,
+	0.0f, 0.0f,
+	1.0f, 0.0f,
+
+	1.0f, 1.0f,
+	0.0f, 1.0f,
+	0.0f, 0.0f,
+	1.0f, 1.0f,
+	0.0f, 0.0f,
+	1.0f, 0.0f,
+
+	1.0f, 1.0f,
+	0.0f, 1.0f,
+	0.0f, 0.0f,
+	1.0f, 1.0f,
+	0.0f, 0.0f,
+	1.0f, 0.0f,
+
+	1.0f, 1.0f,
+	0.0f, 1.0f,
+	0.0f, 0.0f,
+	1.0f, 1.0f,
+	0.0f, 0.0f,
+	1.0f, 0.0f
+};
+
 static_assert( sizeof(kCubeColors) == sizeof(kCubePositions),
 	"Size of cube colors and cube positions do not match. Both are 3D vectors."
 );

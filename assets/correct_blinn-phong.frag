@@ -17,12 +17,14 @@ struct pointLight {
 in vec3 v2fColor;
 in vec3 v2fNormal;
 in vec3 v2fPosition;
+in vec2 v2fTexCoord;
 
 layout ( location = 2 ) uniform vec3 uCameraPosition;
 layout ( location = 3 ) uniform vec4 uMaterialData;
 layout ( location = 4 ) uniform pointLight uPointLightData[POINT_LIGHT_COUNT];
+uniform sampler2D uTexture;
 
-layout( location = 0 ) out vec3 oColor;
+layout ( location = 0 ) out vec4 oColor;
 
 float kA = uMaterialData.x;
 float kD = uMaterialData.y;
@@ -72,7 +74,8 @@ vec3 pointLightContribution() {
 void main()
 {
 	
-	oColor = (pointLightContribution() * v2fColor) + (kE * v2fColor);// * 0) + normalize(v2fNormal);
+	oColor = texture(uTexture, v2fTexCoord) * vec4(((pointLightContribution() * v2fColor) + (kE * v2fColor)), 1.0);
+	// * 0) + normalize(v2fNormal);
 	//oColor = normalize(v2fNormal);
 }
 

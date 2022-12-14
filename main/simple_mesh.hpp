@@ -7,6 +7,19 @@
 #include "optional"
 
 #include "../vmlib/vec3.hpp"
+#include "../vmlib/vec2.hpp"
+#include <string>
+
+struct Vertex {
+	std::vector<Vec3f> Position;
+	std::vector<Vec3f> Normal;
+	std::vector<Vec2f> TexCoords;
+};
+
+struct Texture {
+	unsigned int id;
+	std::string type;
+};
 
 struct SimpleMeshData
 {
@@ -18,7 +31,6 @@ struct SimpleMeshData
 };
 
 SimpleMeshData concatenate( SimpleMeshData, SimpleMeshData const& );
-
 
 GLuint create_vao( SimpleMeshData const&, std::optional<GLuint> = std::nullopt );
 

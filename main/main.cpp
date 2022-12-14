@@ -26,6 +26,10 @@
 #include "point_light.hpp"
 #include "scene_object.hpp"
 
+// include STB_IMAGE for texture mapping, provided in the "third_party" directory
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
 namespace
 {
 	constexpr char const* kWindowTitle = "COMP3811 - Coursework 2";
@@ -204,6 +208,47 @@ int main() try
 	// Other initialization & loading
 	OGL_CHECKPOINT_ALWAYS();
 
+	//####################### Texture Loading ############################
+	// Guide for texture mapping: https://learnopengl.com/Getting-started/Textures
+	// As a rule of thumb, we want to load textures once only so we do it out of the main loop
+	// Reserve an ID to our woodTexture and bind
+	unsigned int woodTexture;
+	glGenTextures(1, &woodTexture);
+	glBindTexture(GL_TEXTURE_2D, woodTexture);
+	// set the texture wrapping/filtering options (on the currently bound texture object)
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	// Load wooden container texture
+	int woodTextureWidth, woodTextureHeight, woodTextureNRChannels;
+	unsigned char* woodTextureData = stbi_load("assets/textures/container.jpg", &woodTextureWidth, &woodTextureHeight, &woodTextureNRChannels, 0);
+	// Generate a texture using the image data
+	// Take note if there's an Alpha value or not, you'll either use GL_RGB or GL_RGBA
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, woodTextureWidth, woodTextureHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, woodTextureData);
+	glGenerateMipmap(GL_TEXTURE_2D);
+	// free the memory used for the image data
+	stbi_image_free(woodTextureData);
+
+	// Reserve an ID for our markusTexture and bind
+	unsigned int markusTexture;
+	glGenTextures(1, &markusTexture);
+	glBindTexture(GL_TEXTURE_2D, markusTexture);
+	// set the texture wrapping/filtering options (on the currently bound texture object)
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	// Load markusen container texture
+	int markusTextureWidth, markusTextureHeight, markusTextureNRChannels;
+	unsigned char* markusTextureData = stbi_load("assets/textures/markus.png", &markusTextureWidth, &markusTextureHeight, &markusTextureNRChannels, 0);
+	// Generate a texture using the image data
+	// Take note if there's an Alpha value or not, you'll either use GL_RGB or GL_RGBA
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, markusTextureWidth, markusTextureHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, markusTextureData);
+	glGenerateMipmap(GL_TEXTURE_2D);
+	// free the memory used for the image data
+	stbi_image_free(markusTextureData);
+
 	//####################### VBO and VAO creation #######################
 
 	// Complex Object Position VBO
@@ -217,6 +262,12 @@ int main() try
 	glGenBuffers(1, &complexObjectColorVBO);
 	glBindBuffer(GL_ARRAY_BUFFER, complexObjectColorVBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(kCubeColors), kCubeColors, GL_STATIC_DRAW);
+
+	// Complex Object TextureCoord VBO
+	GLuint complexObjectTextureCoordVBO = 0;
+	glGenBuffers(1, &complexObjectTextureCoordVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, complexObjectTextureCoordVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(kCubeTextureCoord), kCubeTextureCoord, GL_STATIC_DRAW);
 
 	// Bind VBO into VAO
 	GLuint complexObjectVAO = 0;
@@ -240,6 +291,15 @@ int main() try
 		0						// no offset
 	);
 	glEnableVertexAttribArray(1);
+
+	glBindBuffer(GL_ARRAY_BUFFER, complexObjectTextureCoordVBO);
+	glVertexAttribPointer(
+		3,						// loc 3 in vert shader
+		2, GL_FLOAT, GL_FALSE,	// 2 floats, not normalized
+		0,						// no padding
+		0						// no offset
+	);
+	glEnableVertexAttribArray(3);
 
 	// Reset state
 	glBindVertexArray(0);
@@ -328,7 +388,7 @@ int main() try
 		Mat44f worldTranslation = make_translation(state.camControl.position);
 		Mat44f world2camera = worldRotationX * worldRotationY *  worldTranslation;
 
-		Mat44f projCameraWorld = projection * world2camera;	// cube 1
+		Mat44f projCameraWorld = projection * world2camera;
 		Mat44f projCameraWorld2 = projection * world2camera * make_translation({10.f, -1.f, 0.f}) * make_scaling(10.f, 1.f, 1.f) ;
 		Mat44f projCameraWorld3 = projection * world2camera * make_translation({0.f, -1.f, 10.f}) * make_scaling(1.f, 1.f, 10.f);
 
@@ -406,6 +466,9 @@ int main() try
 		armadilloObj.rotation.y = armadilloObj.rotation.y > 2 * kPi ? 0 : armadilloObj.rotation.y;
 		drawObject(&armadilloObj, projCameraWorld);
 
+		// draw cube 1
+		// bind markusTexture
+		glBindTexture(GL_TEXTURE_2D, woodTexture);
 
 		glUniformMatrix4fv(
 			0, 1,
@@ -414,6 +477,10 @@ int main() try
 
 		glBindVertexArray(complexObjectVAO);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		// draw cube 2
+		//bind woodenTexture
+		glBindTexture(GL_TEXTURE_2D, markusTexture);
 
 		glUniformMatrix4fv(
 			0, 1,
