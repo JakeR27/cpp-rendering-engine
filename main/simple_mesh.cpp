@@ -10,7 +10,6 @@ SimpleMeshData concatenate( SimpleMeshData aM, SimpleMeshData const& aN )
 // VBO for positions and VBO for colours, combined into one VAO that we return
 GLuint create_vao( SimpleMeshData const& aMeshData, std::optional<GLuint> VAO)
 {
-	//DONE: implement create_vao to upload a SimpleMeshData instance to 2 VBOs, then use them to create a VAO
 	// Simple Mesh Position VBO
 	GLuint simpleMeshPositionVBO = 0;
 	glGenBuffers(1, &simpleMeshPositionVBO);
@@ -23,10 +22,14 @@ GLuint create_vao( SimpleMeshData const& aMeshData, std::optional<GLuint> VAO)
 	glBindBuffer(GL_ARRAY_BUFFER, simpleMeshColorVBO);
 	glBufferData(GL_ARRAY_BUFFER, aMeshData.colors.size() * sizeof(Vec3f), aMeshData.colors.data(), GL_STATIC_DRAW);
 
+	// Normals VBO
 	GLuint simpleMeshNormalVBO = 0;
 	glGenBuffers(1, &simpleMeshNormalVBO);
 	glBindBuffer(GL_ARRAY_BUFFER, simpleMeshNormalVBO);
 	glBufferData(GL_ARRAY_BUFFER, aMeshData.normals.size() * sizeof(Vec3f), aMeshData.normals.data(), GL_STATIC_DRAW);
+
+	// Texture Coords VBO
+	GLuint simpleMeshTextureCoordsVBO = 0;
 
 	// Bind VBO into VAO
 	GLuint simpleMeshVAO = 0;
@@ -66,6 +69,15 @@ GLuint create_vao( SimpleMeshData const& aMeshData, std::optional<GLuint> VAO)
 		0						// no offset
 	);
 	glEnableVertexAttribArray(2);
+
+	glBindBuffer(GL_ARRAY_BUFFER, simpleMeshTextureCoordsVBO);
+	glVertexAttribPointer(
+		3,						// loc 3 in vert shader
+		2, GL_FLOAT, GL_FALSE,	// 2 floats, not normalized
+		0,						// no padding
+		0						// no offset
+	);
+	glEnableVertexAttribArray(3);
 
 	// Reset state
 	glBindVertexArray(0);
