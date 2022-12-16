@@ -1,4 +1,7 @@
 #include "simple_mesh.hpp"
+#include "stb_image.h"
+#include "rapidobj/rapidobj.hpp"
+#include "../support/error.hpp"
 
 SimpleMeshData concatenate( SimpleMeshData aM, SimpleMeshData const& aN )
 {
@@ -90,4 +93,5 @@ GLuint create_vao( SimpleMeshData const& aMeshData, std::optional<GLuint> VAO)
 
 	return simpleMeshVAO;
 }
+
 

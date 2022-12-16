@@ -311,17 +311,17 @@ int main() try
 	SceneObject armadilloObj;
 	initObject(&armadilloObj, "assets/Armadillo.obj");
 
-	ComplexSceneObject f1carObj;
-	initComplexObject(&f1carObj, "assets/f1_modified/f1.obj");
+	ComplexTexturedSceneObject f1carObj;
+	initComplexTexturedObject(&f1carObj, "assets/f1_modified/f1.obj");
 	for (int j = 0; j < f1carObj.objectCount; j++)
 	{
-		for (int i = 0; i < f1carObj.meshes[j].size; i++)
+		for (int i = 0; i < f1carObj.meshes[j].meshData.size; i++)
 		{
-			f1carObj.meshes[j].colors[i] = {1.f, 1.f, 1.f};
+			f1carObj.meshes[j].meshData.colors[i] = {1.f, 1.f, 1.f};
 		}
 	}
 	
-	updateComplexObject(&f1carObj);
+	updateComplexTexturedObject(&f1carObj);
 
 	SceneObject bulbObj;
 	initObject(&bulbObj, "assets/globe-sphere.obj");
@@ -472,7 +472,7 @@ int main() try
 		Vec3f pos1 = {0.f, 0.f, 0.f};
 		Vec3f pos2 = {4.f, 0.f, 0.f};
 
-		drawComplexObject(&f1carObj, projCameraWorld);
+		drawComplexTexturedObject(&f1carObj, projCameraWorld);
 
 		armadilloObj.position = pos2;
 		armadilloObj.rotation.y += dt;

@@ -30,6 +30,14 @@ struct SimpleMeshData
 	size_t size;
 };
 
+struct TexturedMeshData
+{
+	SimpleMeshData meshData;
+
+	std::vector<Vec3f> textureCoords;
+	Texture texture;
+};
+
 SimpleMeshData concatenate( SimpleMeshData, SimpleMeshData const& );
 
 GLuint create_vao( SimpleMeshData const&, std::optional<GLuint> = std::nullopt );

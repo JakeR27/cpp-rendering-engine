@@ -19,7 +19,7 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd C:/Users/Jake/OneDrive - University of Leeds/Documents/UNI/COMP3811/cw2/assets/f1/fe0_main.png
+map_Kd f1/fe0_main.png
 
 newmtl generic
 Ns 96.078453
@@ -29,8 +29,8 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd C:/Users/Jake/OneDrive - University of Leeds/Documents/UNI/COMP3811/cw2/assets/f1/generic_main.png
-map_Bump C:/Users/Jake/OneDrive - University of Leeds/Documents/UNI/COMP3811/cw2/assets/f1/generic_main.png
+map_Kd f1/generic_main.png
+map_Bump f1/generic_main.png
 
 newmtl glass
 Ns 96.078453
