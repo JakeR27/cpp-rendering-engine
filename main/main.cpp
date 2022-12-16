@@ -455,7 +455,7 @@ int main() try
 			0.8f, 0.8f, 0.8f, 0.0f
 		);
 
-		// draw armadillo2
+		// draw armadillo
 		Vec3f pos1 = {0.f, 0.f, 0.f};
 		Vec3f pos2 = {4.f, 0.f, 0.f};
 

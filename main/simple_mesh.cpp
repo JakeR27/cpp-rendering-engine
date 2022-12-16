@@ -29,7 +29,10 @@ GLuint create_vao( SimpleMeshData const& aMeshData, std::optional<GLuint> VAO)
 	glBufferData(GL_ARRAY_BUFFER, aMeshData.normals.size() * sizeof(Vec3f), aMeshData.normals.data(), GL_STATIC_DRAW);
 
 	// Texture Coords VBO
-	GLuint simpleMeshTextureCoordsVBO = 0;
+	GLuint simpleMeshTextureCoordinatesVBO = 0;
+	glGenBuffers(1, &simpleMeshTextureCoordinatesVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, simpleMeshTextureCoordinatesVBO);
+	glBufferData(GL_ARRAY_BUFFER, aMeshData.texcoords.size() * sizeof(Vec2f), aMeshData.texcoords.data(), GL_STATIC_DRAW);
 
 	// Bind VBO into VAO
 	GLuint simpleMeshVAO = 0;
@@ -70,14 +73,15 @@ GLuint create_vao( SimpleMeshData const& aMeshData, std::optional<GLuint> VAO)
 	);
 	glEnableVertexAttribArray(2);
 
-	glBindBuffer(GL_ARRAY_BUFFER, simpleMeshTextureCoordsVBO);
-	glVertexAttribPointer(
-		3,						// loc 3 in vert shader
-		2, GL_FLOAT, GL_FALSE,	// 2 floats, not normalized
-		0,						// no padding
-		0						// no offset
-	);
-	glEnableVertexAttribArray(3);
+	// commented out for now, causes glDrawArray to run out of memory
+	//glBindBuffer(GL_ARRAY_BUFFER, simpleMeshTextureCoordinatesVBO);
+	//glVertexAttribPointer(
+	//	3,						// loc 3 in vert shader
+	//	2, GL_FLOAT, GL_FALSE,	// 2 floats, not normalized
+	//	0,						// no padding
+	//	0						// no offset
+	//);
+	//glEnableVertexAttribArray(3);
 
 	// Reset state
 	glBindVertexArray(0);
