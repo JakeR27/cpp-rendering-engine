@@ -254,6 +254,9 @@ int main() try
 	// free the memory used for the image data
 	stbi_image_free(markusTextureData);
 
+	// reset texture state
+	glBindTexture(GL_TEXTURE_2D, 0);
+
 	//####################### VBO and VAO creation #######################
 
 	// Complex Object Position VBO
@@ -478,15 +481,13 @@ int main() try
 		);
 
 
-		// bind markusTexture
-		glBindTexture(GL_TEXTURE_2D, markusTexture);
-
 		// draw f1 car
 		Vec3f pos1 = {0.f, 0.f, 0.f};
 		Vec3f pos2 = {4.f, 0.f, 0.f};
 
 		drawComplexObject(&f1carObj, projCameraWorld);
 
+		// draw armadillo
 		armadilloObj.position = pos2;
 		armadilloObj.rotation.y += dt;
 		armadilloObj.rotation.y = armadilloObj.rotation.y > 2 * kPi ? 0 : armadilloObj.rotation.y;
@@ -520,7 +521,7 @@ int main() try
 		lightMaterialProps.v[13] = state.sceneLights[0].color.y;
 		lightMaterialProps.v[14] = state.sceneLights[0].color.z;
 
-		// seetting material properties
+		// setting material properties
 		glUniformMatrix4fv(
 			3, 1,
 			GL_FALSE, lightMaterialProps.v
