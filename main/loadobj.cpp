@@ -8,6 +8,7 @@
 SimpleMeshData load_wavefront_obj(char const* aPath)
 {
 	// Ask rapidobj to load the requested file
+	// Automatically assumes that the .mtl file is in the same directory as the obj file with the same name
 	auto result = rapidobj::ParseFile(aPath);
 	if(result.error)
 		throw Error("Unable to load OBJ file ’%s’: %s", aPath, result.error.code.message().c_str());
@@ -69,6 +70,7 @@ SimpleMeshData load_wavefront_obj(char const* aPath)
 std::vector<SimpleMeshData> load_wavefront_multi_obj(char const* aPath)
 {
 	// Ask rapidobj to load the requested file
+	// Automatically assumes that the .mtl file is in the same directory as the obj file with the same name
 	auto result = rapidobj::ParseFile(aPath);
 	if(result.error)
 		throw Error("Unable to load OBJ file ’%s’: %s", aPath, result.error.code.message().c_str());
