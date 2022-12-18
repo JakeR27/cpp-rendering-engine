@@ -29,6 +29,7 @@
 // include STB_IMAGE for texture mapping, provided in the "third_party" directory
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
+#include <iostream>
 
 namespace
 {
@@ -211,6 +212,10 @@ int main() try
 	//####################### Texture Loading ############################
 	// Guide for texture mapping: https://learnopengl.com/Getting-started/Textures
 	// As a rule of thumb, we want to load textures once only so we do it out of the main loop
+	// Texture loading settings
+	// flip the image vertically
+	stbi_set_flip_vertically_on_load(true);
+
 	// Reserve an ID to our woodTexture and bind
 	unsigned int woodTexture;
 	glGenTextures(1, &woodTexture);
@@ -239,7 +244,7 @@ int main() try
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	// Load markusen container texture
+	// Load markus texture
 	int markusTextureWidth, markusTextureHeight, markusTextureNRChannels;
 	unsigned char* markusTextureData = stbi_load("assets/textures/markus.png", &markusTextureWidth, &markusTextureHeight, &markusTextureNRChannels, 0);
 	// Generate a texture using the image data
@@ -449,25 +454,30 @@ int main() try
 			camPos.z
 		);
 
-		// seetting material properties
+		// setting material properties
 		glUniform4f(
 			3,
 			0.8f, 0.8f, 0.8f, 0.0f
 		);
 
-		// draw armadillo
+
+		// bind markusTexture
+		glBindTexture(GL_TEXTURE_2D, markusTexture);
+
+		// draw f1 car
 		Vec3f pos1 = {0.f, 0.f, 0.f};
 		Vec3f pos2 = {4.f, 0.f, 0.f};
 
 		drawComplexObject(&f1carObj, projCameraWorld);
 
+		// draw armadillo
 		armadilloObj.position = pos2;
 		armadilloObj.rotation.y += dt;
 		armadilloObj.rotation.y = armadilloObj.rotation.y > 2 * kPi ? 0 : armadilloObj.rotation.y;
 		drawObject(&armadilloObj, projCameraWorld);
 
 		// draw cube 1
-		// bind markusTexture
+		// bind woodenTexture
 		glBindTexture(GL_TEXTURE_2D, woodTexture);
 
 		glUniformMatrix4fv(
@@ -479,7 +489,7 @@ int main() try
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
 		// draw cube 2
-		//bind woodenTexture
+		//bind markusTexture
 		glBindTexture(GL_TEXTURE_2D, markusTexture);
 
 		glUniformMatrix4fv(
