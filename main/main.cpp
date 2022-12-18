@@ -320,6 +320,10 @@ int main() try
 			f1carObj.meshes[j].colors[i] = {1.f, 1.f, 1.f};
 		}
 	}
+
+	SceneObj f1Obj;
+	f1Obj.initialise("assets/f1_modified/f1.obj");
+	f1Obj.move({-2.f, 0.f, -2.f});
 	
 	updateComplexObject(&f1carObj);
 
@@ -473,6 +477,8 @@ int main() try
 		Vec3f pos2 = {4.f, 0.f, 0.f};
 
 		drawComplexObject(&f1carObj, projCameraWorld);
+
+		f1Obj.draw(projCameraWorld);
 
 		armadilloObj.position = pos2;
 		armadilloObj.rotation.y += dt;

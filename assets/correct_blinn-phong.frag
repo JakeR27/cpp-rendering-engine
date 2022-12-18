@@ -74,7 +74,7 @@ vec3 pointLightContribution() {
 void main()
 {
 	
-	oColor = texture(uTexture, v2fTexCoord) * vec4(((pointLightContribution() * v2fColor) + (kE * v2fColor)), 1.0);
+	oColor = texture(uTexture, v2fTexCoord.xy) * vec4(((pointLightContribution() * v2fColor) + (kE * v2fColor)), 1.0);
 	// * 0) + normalize(v2fNormal);
 	//oColor = normalize(v2fNormal);
 }

@@ -4,10 +4,15 @@
 #include <cmath>
 #include <cassert>
 #include <cstdlib>
+#include <array>
 
 struct Vec3f
 {
 	float x, y, z;
+
+	constexpr Vec3f() : x(0), y(0), z(0) {}
+	constexpr Vec3f(float x, float y, float z) : x(x), y(y), z(z){}
+	constexpr Vec3f(std::array<float,3> aValues) : x(aValues[0]), y(aValues[1]), z(aValues[2]) {}
 
 	constexpr 
 	float& operator[] (std::size_t aI) noexcept

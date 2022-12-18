@@ -2,8 +2,34 @@
 #define SCENE_OBJECT_HEADER_FILE
 
 #include "simple_mesh.hpp"
+#include "mesh_data.hpp"
+#include "transform.hpp"
 #include "../vmlib/mat44.hpp"
+#include "rapidobj/rapidobj.hpp"
 
+class SceneObj
+{
+	std::string filepath;
+	Transform transform;
+
+	std::vector<MeshData>	meshes;
+	std::vector<Material>	materials;
+	std::vector<GLuint>		VAOs;
+	size_t					meshCount;
+
+	bool initialised = false;
+
+	int loadMaterials(rapidobj::Materials);
+	int loadWavefrontObj();
+	GLuint createVAO(MeshData aMeshData, std::optional<GLuint> aVAO = std::nullopt);
+	int generateVAOs();
+
+public:
+	int initialise(std::string aPath);
+	int updateVAO();
+	void move(Vec3f aVec) {transform.setPosition(aVec);}
+	int draw(Mat44f aProjCamera);
+};
 
 typedef struct _sceneObject
 {
