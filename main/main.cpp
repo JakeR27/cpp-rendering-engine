@@ -325,6 +325,10 @@ int main() try
 			f1carObj.meshes[j].colors[i] = {1.f, 1.f, 1.f};
 		}
 	}
+
+	SceneObj f1Obj;
+	f1Obj.initialise("assets/f1_modified/f1.obj");
+	f1Obj.move({-2.f, 0.f, -2.f});
 	
 	updateComplexObject(&f1carObj);
 
@@ -454,10 +458,23 @@ int main() try
 			camPos.z
 		);
 
-		// setting material properties
-		glUniform4f(
-			3,
-			0.8f, 0.8f, 0.8f, 0.0f
+		Mat44f standardMaterialProps = {
+			0.8f, 0.8f, 0.8f, 0.f, // kA
+			0.8f, 0.8f, 0.8f, 0.f, // kD
+			0.8f, 0.8f, 0.8f, 0.f,// kS
+			0.f, 0.f, 0.f, 0.f  // kE
+		};
+
+		Mat44f lightMaterialProps = {
+			0.f, 0.f, 0.f, 0.f,   // kA
+			0.f, 0.f, 0.f, 0.f,   // kD
+			0.f, 0.f, 0.f, 0.f,  // kS
+			1.f, 1.f, 1.f, 0.f // kE
+		};
+
+		glUniformMatrix4fv(
+			3, 1,
+			GL_FALSE, standardMaterialProps.v
 		);
 
 
@@ -470,7 +487,6 @@ int main() try
 
 		drawComplexObject(&f1carObj, projCameraWorld);
 
-		// draw armadillo
 		armadilloObj.position = pos2;
 		armadilloObj.rotation.y += dt;
 		armadilloObj.rotation.y = armadilloObj.rotation.y > 2 * kPi ? 0 : armadilloObj.rotation.y;
@@ -500,17 +516,41 @@ int main() try
 		glBindVertexArray(complexObjectVAO);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
+		lightMaterialProps.v[12] = state.sceneLights[0].color.x;
+		lightMaterialProps.v[13] = state.sceneLights[0].color.y;
+		lightMaterialProps.v[14] = state.sceneLights[0].color.z;
+
 		// seetting material properties
-		glUniform4f(
-			3,
-			1.f, 1.f, 0.f, 0.f
+		glUniformMatrix4fv(
+			3, 1,
+			GL_FALSE, lightMaterialProps.v
 		);
 
 		bulbObj.position = state.sceneLights[0].position;
 		drawObject(&bulbObj, projCameraWorld);
 
+		lightMaterialProps.v[12] = state.sceneLights[1].color.x;
+		lightMaterialProps.v[13] = state.sceneLights[1].color.y;
+		lightMaterialProps.v[14] = state.sceneLights[1].color.z;
+
+		// seetting material properties
+		glUniformMatrix4fv(
+			3, 1,
+			GL_FALSE, lightMaterialProps.v
+		);
+
 		bulbObj.position = state.sceneLights[1].position;
 		drawObject(&bulbObj, projCameraWorld);
+
+		lightMaterialProps.v[12] = state.sceneLights[2].color.x;
+		lightMaterialProps.v[13] = state.sceneLights[2].color.y;
+		lightMaterialProps.v[14] = state.sceneLights[2].color.z;
+
+		// seetting material properties
+		glUniformMatrix4fv(
+			3, 1,
+			GL_FALSE, lightMaterialProps.v
+		);
 
 		bulbObj.position = state.sceneLights[2].position;
 		drawObject(&bulbObj, projCameraWorld);

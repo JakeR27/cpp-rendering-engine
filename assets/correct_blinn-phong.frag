@@ -20,16 +20,16 @@ in vec3 v2fPosition;
 in vec2 v2fTexCoord;
 
 layout ( location = 2 ) uniform vec3 uCameraPosition;
-layout ( location = 3 ) uniform vec4 uMaterialData;
+layout ( location = 3 ) uniform mat4 uMaterialData;
 layout ( location = 4 ) uniform pointLight uPointLightData[POINT_LIGHT_COUNT];
 uniform sampler2D uTexture;
 
 layout ( location = 0 ) out vec4 oColor;
 
-float kA = uMaterialData.x;
-float kD = uMaterialData.y;
-float kS = uMaterialData.z;
-float kE = uMaterialData.w;
+vec3 kA = uMaterialData[0].xyz;
+vec3 kD = uMaterialData[1].xyz;
+vec3 kS = uMaterialData[2].xyz;
+vec3 kE = uMaterialData[3].xyz;
 float kAlphaPrime = 4;
 float kAlpha = 4 * kAlphaPrime;
 
@@ -48,13 +48,13 @@ vec3 calculate_pointLight_contribution(pointLight light) {
 	//float specularTerm = max( dot(R, V), 0 );
 
 	//ambient
-	float ambient = kA + (light.brightness * 0);
+	vec3 ambient = kA + (light.brightness * 0);
 
 	//diffuse
-	float diffuse = kD / kPI;
+	vec3 diffuse = kD / kPI;
 
 	//specular
-	float specular = kS * ((kAlphaPrime + 2) / 8) * pow( specularTerm, kAlphaPrime);
+	vec3 specular = kS * ((kAlphaPrime + 2) / 8) * pow( specularTerm, kAlphaPrime);
 
 	//distance falloff
 	float falloff = 1 / (dist * dist);
@@ -74,7 +74,7 @@ vec3 pointLightContribution() {
 void main()
 {
 	
-	oColor = texture(uTexture, v2fTexCoord) * vec4(((pointLightContribution() * v2fColor) + (kE * v2fColor)), 1.0);
+	oColor = texture(uTexture, v2fTexCoord.xy) * vec4(((pointLightContribution() * v2fColor) + (kE * v2fColor)), 1.0);
 	// * 0) + normalize(v2fNormal);
 	//oColor = normalize(v2fNormal);
 }
