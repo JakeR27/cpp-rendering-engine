@@ -3,6 +3,7 @@
 #include <rapidobj/rapidobj.hpp>
 
 #include "../support/error.hpp"
+#include <iostream>
 
 SimpleMeshData load_wavefront_obj(char const* aPath)
 {
@@ -26,17 +27,28 @@ SimpleMeshData load_wavefront_obj(char const* aPath)
 		{
 			auto const& idx = shape.mesh.indices[i];
 
-			ret.positions.emplace_back(Vec3f{
+			if (result.attributes.positions.size() != 0) {
+				ret.positions.emplace_back(Vec3f{
 				result.attributes.positions[idx.position_index * 3 + 0],
 				result.attributes.positions[idx.position_index * 3 + 1],
 				result.attributes.positions[idx.position_index * 3 + 2]
-				});
+					});
+			}
 
-			ret.normals.emplace_back(Vec3f{
+			if (result.attributes.normals.size() != 0) {
+				ret.normals.emplace_back(Vec3f{
 				result.attributes.normals[idx.normal_index * 3 + 0],
 				result.attributes.normals[idx.normal_index * 3 + 1],
 				result.attributes.normals[idx.normal_index * 3 + 2]
+					});
+			}
+			
+			if (result.attributes.texcoords.size() != 0) {
+				ret.texcoords.emplace_back(Vec2f{
+				result.attributes.texcoords[idx.texcoord_index * 2 + 0],
+				result.attributes.texcoords[idx.texcoord_index * 2 + 1]
 				});
+			}
 
 
 			// Always triangles, so we can find the face index by dividing the vertex index by three
@@ -77,17 +89,28 @@ std::vector<SimpleMeshData> load_wavefront_multi_obj(char const* aPath)
 		{
 			auto const& idx = shape.mesh.indices[i];
 
-			ret.positions.emplace_back(Vec3f{
+			if (result.attributes.positions.size() != 0) {
+				ret.positions.emplace_back(Vec3f{
 				result.attributes.positions[idx.position_index * 3 + 0],
 				result.attributes.positions[idx.position_index * 3 + 1],
 				result.attributes.positions[idx.position_index * 3 + 2]
-				});
+					});
+			}
 
-			ret.normals.emplace_back(Vec3f{
+			if (result.attributes.normals.size() != 0) {
+				ret.normals.emplace_back(Vec3f{
 				result.attributes.normals[idx.normal_index * 3 + 0],
 				result.attributes.normals[idx.normal_index * 3 + 1],
 				result.attributes.normals[idx.normal_index * 3 + 2]
-				});
+					});
+			}
+
+			if (result.attributes.texcoords.size() != 0) {
+				ret.texcoords.emplace_back(Vec2f{
+				result.attributes.texcoords[idx.texcoord_index * 2 + 0],
+				result.attributes.texcoords[idx.texcoord_index * 2 + 1]
+					});
+			}
 
 			// Always triangles, so we can find the face index by dividing the vertex index by three
 			auto const& mat = result.materials[shape.mesh.material_ids[i / 3]];
