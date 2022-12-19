@@ -137,20 +137,23 @@ int main() try
 		{0.f, 1.f, 1.f}
 	};*/
 
+	// SE
 	state.sceneLights[0] = {
-		{0.f, 4.5f, 0.5f},
+		{-4.45f, 3.55f, -4.45f},
 		{1.f, 1.f, 0.f},
 		1
 	};
 
+	// SW
 	state.sceneLights[1] = {
-		{0.75f, 3.25f, 0.5f},
+		{4.45f, 3.55f, -4.45f},
 		{0.f, 1.f, 1.f},
 		1
 	};
 
+	// N
 	state.sceneLights[2] = {
-		{0.25f, 1.5f, 1.f},
+		{0.f, 3.55f, 4.2f},
 		{1.f, 0.1f, 0.1f},
 		1
 	};
@@ -344,7 +347,24 @@ int main() try
 	// free the memory used for the image data
 	stbi_image_free(westCityTextureData);
 
-
+	// iron texture
+	unsigned int ironTexture;
+	glGenTextures(1, &ironTexture);
+	glBindTexture(GL_TEXTURE_2D, ironTexture);
+	// set the texture wrapping/filtering options (on the currently bound texture object)
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	// Load iron texture
+	int ironTextureWidth, ironTextureHeight, ironTextureNRChannels;
+	unsigned char* ironTextureData = stbi_load("assets/textures/iron.jpg", &ironTextureWidth, &ironTextureHeight, &ironTextureNRChannels, 0);
+	// Generate a texture using the image data
+	// Take note if there's an Alpha value or not, you'll either use GL_RGB or GL_RGBA
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, ironTextureWidth, ironTextureHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, ironTextureData);
+	glGenerateMipmap(GL_TEXTURE_2D);
+	// free the memory used for the image data
+	stbi_image_free(ironTextureData);
 	
 
 	//####################### VBO and VAO creation #######################
@@ -406,6 +426,11 @@ int main() try
 
 	OGL_CHECKPOINT_ALWAYS();
 	
+	// define scene objects
+
+	SceneObject streetlampObj;
+	initObject(&streetlampObj, "assets/streetlamp.obj");
+
 	SceneObject armadilloObj;
 	initObject(&armadilloObj, "assets/Armadillo.obj");
 
@@ -492,7 +517,7 @@ int main() try
 
 		// define model to world transformations
 		Mat44f projCameraWorld = projection * world2camera;
-		// use different model to world transformations to define cuboids in our scene
+		// boundary box
 		// floor
 		Mat44f projCameraWorldFloor = projection * world2camera * make_translation({ 0.f, 0.f, 0.f }) * make_scaling(20.f, 0.01f, 20.f);
 		// ceiling
@@ -586,18 +611,39 @@ int main() try
 		// draw f1 car
 		drawComplexObject(&f1carObj, projCameraWorld);
 
-		//// draw a SceneObj f1 car
-		//f1Obj.draw(projCameraWorld);
+		// draw a SceneObj f1 car
+		f1Obj.draw(projCameraWorld);
 
 		// define terms for the armadillo
 		Vec3f pos1 = { 0.f, 0.f, 0.f };
 		Vec3f pos2 = { 4.f, 0.f, 0.f };
 
-		//// adjust the armadillo's rotation, then draw it
-		//armadilloObj.position = pos2;
-		//armadilloObj.rotation.y += dt;
-		//armadilloObj.rotation.y = armadilloObj.rotation.y > 2 * kPi ? 0 : armadilloObj.rotation.y;
-		//drawObject(&armadilloObj, projCameraWorld);
+		// adjust the armadillo's rotation, then draw it
+		armadilloObj.position = pos2;
+		armadilloObj.rotation.y += dt;
+		armadilloObj.rotation.y = armadilloObj.rotation.y > 2 * kPi ? 0 : armadilloObj.rotation.y;
+		drawObject(&armadilloObj, projCameraWorld);
+
+		// define positions for the streetlamps
+		Vec3f streetlampPos1 = { -5.f, 0.f, -5.f };	// SE
+		Vec3f streetlampPos2 = { 5.f, 0.f, -5.f };	// SW
+		Vec3f streetlampPos3 = { 0.f, 0.f, 5.f };	// N
+
+		// draw streetlamps
+		// bind iron
+		glBindTexture(GL_TEXTURE_2D, ironTexture);
+		streetlampObj.position = streetlampPos1;
+		streetlampObj.scaling = { 0.25f, 0.25f, 0.25f };
+		streetlampObj.rotation.y = kPi * 3 / 4;
+		drawObject(&streetlampObj, projCameraWorld);
+
+		streetlampObj.position = streetlampPos2;
+		streetlampObj.rotation.y = kPi / 4;
+		drawObject(&streetlampObj, projCameraWorld);
+
+		streetlampObj.position = streetlampPos3;
+		streetlampObj.rotation.y = -kPi / 2;
+		drawObject(&streetlampObj, projCameraWorld);
 
 		// draw the box around the scene
 		// draw floor
