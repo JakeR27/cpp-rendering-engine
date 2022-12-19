@@ -119,7 +119,7 @@ int main() try
 	glfwSetWindowUserPointer( window, &state );
 
 	// Initialise camera info
-	state.camControl.position = {0.f, 0.f, -10.f};
+	state.camControl.position = {0.f, -1.f, -5.f};
 	state.camControl.direction = {0.f , 0.f, 1.f};
 	state.camControl.forwards = {0.f , 0.f, 1.f};
 	state.camControl.up = {0.f , 1.0f, 0.f};
@@ -137,20 +137,23 @@ int main() try
 		{0.f, 1.f, 1.f}
 	};*/
 
+	// SE
 	state.sceneLights[0] = {
-		{0.f, 4.5f, 0.5f},
+		{-4.45f, 3.55f, -4.45f},
 		{1.f, 1.f, 0.f},
 		1
 	};
 
+	// SW
 	state.sceneLights[1] = {
-		{0.75f, 3.25f, 0.5f},
+		{4.45f, 3.55f, -4.45f},
 		{0.f, 1.f, 1.f},
 		1
 	};
 
+	// N
 	state.sceneLights[2] = {
-		{0.25f, 1.5f, 1.f},
+		{0.f, 3.55f, 4.2f},
 		{1.f, 0.1f, 0.1f},
 		1
 	};
@@ -211,24 +214,24 @@ int main() try
 	//####################### Texture Loading ############################
 	// Guide for texture mapping: https://learnopengl.com/Getting-started/Textures
 	// As a rule of thumb, we want to load textures once only so we do it out of the main loop
-	// Reserve an ID to our woodTexture and bind
-	unsigned int woodTexture;
-	glGenTextures(1, &woodTexture);
-	glBindTexture(GL_TEXTURE_2D, woodTexture);
+	// Reserve an ID to our cobblestoneFloor and bind
+	unsigned int cobblestoneFloor;
+	glGenTextures(1, &cobblestoneFloor);
+	glBindTexture(GL_TEXTURE_2D, cobblestoneFloor);
 	// set the texture wrapping/filtering options (on the currently bound texture object)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	// Load wooden container texture
-	int woodTextureWidth, woodTextureHeight, woodTextureNRChannels;
-	unsigned char* woodTextureData = stbi_load("assets/textures/container.jpg", &woodTextureWidth, &woodTextureHeight, &woodTextureNRChannels, 0);
+	int cobblestoneFloorWidth, cobblestoneFloorHeight, cobblestoneFloorNRChannels;
+	unsigned char* cobblestoneFloorData = stbi_load("assets/textures/cobblestonefloor.jpeg", &cobblestoneFloorWidth, &cobblestoneFloorHeight, &cobblestoneFloorNRChannels, 0);
 	// Generate a texture using the image data
 	// Take note if there's an Alpha value or not, you'll either use GL_RGB or GL_RGBA
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, woodTextureWidth, woodTextureHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, woodTextureData);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, cobblestoneFloorWidth, cobblestoneFloorHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, cobblestoneFloorData);
 	glGenerateMipmap(GL_TEXTURE_2D);
 	// free the memory used for the image data
-	stbi_image_free(woodTextureData);
+	stbi_image_free(cobblestoneFloorData);
 
 	// Reserve an ID for our markusTexture and bind
 	unsigned int markusTexture;
@@ -239,7 +242,7 @@ int main() try
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	// Load markusen container texture
+	// Load markus container texture
 	int markusTextureWidth, markusTextureHeight, markusTextureNRChannels;
 	unsigned char* markusTextureData = stbi_load("assets/textures/markus.png", &markusTextureWidth, &markusTextureHeight, &markusTextureNRChannels, 0);
 	// Generate a texture using the image data
@@ -248,6 +251,121 @@ int main() try
 	glGenerateMipmap(GL_TEXTURE_2D);
 	// free the memory used for the image data
 	stbi_image_free(markusTextureData);
+
+	// nightsky texture
+	unsigned int nightSkyTexture;
+	glGenTextures(1, &nightSkyTexture);
+	glBindTexture(GL_TEXTURE_2D, nightSkyTexture);
+	// set the texture wrapping/filtering options (on the currently bound texture object)
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	// Load nightSky texture
+	int nightSkyTextureWidth, nightSkyTextureHeight, nightSkyTextureNRChannels;
+	unsigned char* nightSkyTextureData = stbi_load("assets/textures/nightsky.jpeg", &nightSkyTextureWidth, &nightSkyTextureHeight, &nightSkyTextureNRChannels, 0);
+	// Generate a texture using the image data
+	// Take note if there's an Alpha value or not, you'll either use GL_RGB or GL_RGBA
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, nightSkyTextureWidth, nightSkyTextureHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, nightSkyTextureData);
+	glGenerateMipmap(GL_TEXTURE_2D);
+	// free the memory used for the image data
+	stbi_image_free(nightSkyTextureData);
+
+	// northcity texture
+	unsigned int northCityTexture;
+	glGenTextures(1, &northCityTexture);
+	glBindTexture(GL_TEXTURE_2D, northCityTexture);
+	// set the texture wrapping/filtering options (on the currently bound texture object)
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	// Load northCity texture
+	int northCityTextureWidth, northCityTextureHeight, northCityTextureNRChannels;
+	unsigned char* northCityTextureData = stbi_load("assets/textures/northcity.jpg", &northCityTextureWidth, &northCityTextureHeight, &northCityTextureNRChannels, 0);
+	// Generate a texture using the image data
+	// Take note if there's an Alpha value or not, you'll either use GL_RGB or GL_RGBA
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, northCityTextureWidth, northCityTextureHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, northCityTextureData);
+	glGenerateMipmap(GL_TEXTURE_2D);
+	// free the memory used for the image data
+	stbi_image_free(northCityTextureData);
+
+	// southcity texture
+	unsigned int southCityTexture;
+	glGenTextures(1, &southCityTexture);
+	glBindTexture(GL_TEXTURE_2D, southCityTexture);
+	// set the texture wrapping/filtering options (on the currently bound texture object)
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	// Load southCity texture
+	int southCityTextureWidth, southCityTextureHeight, southCityTextureNRChannels;
+	unsigned char* southCityTextureData = stbi_load("assets/textures/southcity.jpg", &southCityTextureWidth, &southCityTextureHeight, &southCityTextureNRChannels, 0);
+	// Generate a texture using the image data
+	// Take note if there's an Alpha value or not, you'll either use GL_RGB or GL_RGBA
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, southCityTextureWidth, southCityTextureHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, southCityTextureData);
+	glGenerateMipmap(GL_TEXTURE_2D);
+	// free the memory used for the image data
+	stbi_image_free(southCityTextureData);
+
+	// eastcity texture
+	unsigned int eastCityTexture;
+	glGenTextures(1, &eastCityTexture);
+	glBindTexture(GL_TEXTURE_2D, eastCityTexture);
+	// set the texture wrapping/filtering options (on the currently bound texture object)
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	// Load eastCity texture
+	int eastCityTextureWidth, eastCityTextureHeight, eastCityTextureNRChannels;
+	unsigned char* eastCityTextureData = stbi_load("assets/textures/eastcity.jpg", &eastCityTextureWidth, &eastCityTextureHeight, &eastCityTextureNRChannels, 0);
+	// Generate a texture using the image data
+	// Take note if there's an Alpha value or not, you'll either use GL_RGB or GL_RGBA
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, eastCityTextureWidth, eastCityTextureHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, eastCityTextureData);
+	glGenerateMipmap(GL_TEXTURE_2D);
+	// free the memory used for the image data
+	stbi_image_free(eastCityTextureData);
+
+	// westcity texture
+	unsigned int westCityTexture;
+	glGenTextures(1, &westCityTexture);
+	glBindTexture(GL_TEXTURE_2D, westCityTexture);
+	// set the texture wrapping/filtering options (on the currently bound texture object)
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	// Load westCity texture
+	int westCityTextureWidth, westCityTextureHeight, westCityTextureNRChannels;
+	unsigned char* westCityTextureData = stbi_load("assets/textures/westcity.jpg", &westCityTextureWidth, &westCityTextureHeight, &westCityTextureNRChannels, 0);
+	// Generate a texture using the image data
+	// Take note if there's an Alpha value or not, you'll either use GL_RGB or GL_RGBA
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, westCityTextureWidth, westCityTextureHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, westCityTextureData);
+	glGenerateMipmap(GL_TEXTURE_2D);
+	// free the memory used for the image data
+	stbi_image_free(westCityTextureData);
+
+	// iron texture
+	unsigned int ironTexture;
+	glGenTextures(1, &ironTexture);
+	glBindTexture(GL_TEXTURE_2D, ironTexture);
+	// set the texture wrapping/filtering options (on the currently bound texture object)
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	// Load iron texture
+	int ironTextureWidth, ironTextureHeight, ironTextureNRChannels;
+	unsigned char* ironTextureData = stbi_load("assets/textures/iron.jpg", &ironTextureWidth, &ironTextureHeight, &ironTextureNRChannels, 0);
+	// Generate a texture using the image data
+	// Take note if there's an Alpha value or not, you'll either use GL_RGB or GL_RGBA
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, ironTextureWidth, ironTextureHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, ironTextureData);
+	glGenerateMipmap(GL_TEXTURE_2D);
+	// free the memory used for the image data
+	stbi_image_free(ironTextureData);
+	
 
 	//####################### VBO and VAO creation #######################
 
@@ -308,6 +426,11 @@ int main() try
 
 	OGL_CHECKPOINT_ALWAYS();
 	
+	// define scene objects
+
+	SceneObject streetlampObj;
+	initObject(&streetlampObj, "assets/streetlamp.obj");
+
 	SceneObject armadilloObj;
 	initObject(&armadilloObj, "assets/Armadillo.obj");
 
@@ -392,9 +515,22 @@ int main() try
 		Mat44f worldTranslation = make_translation(state.camControl.position);
 		Mat44f world2camera = worldRotationX * worldRotationY *  worldTranslation;
 
+		// define model to world transformations
 		Mat44f projCameraWorld = projection * world2camera;
-		Mat44f projCameraWorld2 = projection * world2camera * make_translation({10.f, -1.f, 0.f}) * make_scaling(10.f, 1.f, 1.f) ;
-		Mat44f projCameraWorld3 = projection * world2camera * make_translation({0.f, -1.f, 10.f}) * make_scaling(1.f, 1.f, 10.f);
+		// boundary box
+		// floor
+		Mat44f projCameraWorldFloor = projection * world2camera * make_translation({ 0.f, 0.f, 0.f }) * make_scaling(20.f, 0.01f, 20.f);
+		// ceiling
+		Mat44f projCameraWorldCeiling = projection * world2camera * make_translation({ 0.f, 15.f, 0.f }) * make_scaling(20.f, 0.01f, 20.f);
+		// north wall
+		Mat44f projCameraWorldNorth = projection * world2camera * make_translation({ 0.f, 7.5f, 20.f }) * make_scaling(20.f, 7.5f, 0.01f);
+		// south wall
+		Mat44f projCameraWorldSouth = projection * world2camera * make_translation({0.f, 7.5f, -20.f}) * make_scaling(20.f, 7.5f, 0.01f);
+		// west wall
+		Mat44f projCameraWorldWest = projection * world2camera * make_translation({20.f, 7.5f, 0.f}) * make_scaling(0.01f, 7.5f, 20.f);
+		// east wall
+		Mat44f projCameraWorldEast = projection * world2camera * make_translation({-20.f, 7.5f, 0.f }) * make_scaling(0.01f, 7.5f, 20.f);
+		
 
 		OGL_CHECKPOINT_DEBUG();
 		//####################### Draw frame #######################
@@ -472,42 +608,113 @@ int main() try
 			GL_FALSE, standardMaterialProps.v
 		);
 
-		// draw armadillo2
-		Vec3f pos1 = {0.f, 0.f, 0.f};
-		Vec3f pos2 = {4.f, 0.f, 0.f};
-
+		// draw f1 car
 		drawComplexObject(&f1carObj, projCameraWorld);
 
+		// draw a SceneObj f1 car
 		f1Obj.draw(projCameraWorld);
 
+		// define terms for the armadillo
+		Vec3f pos1 = { 0.f, 0.f, 0.f };
+		Vec3f pos2 = { 4.f, 0.f, 0.f };
+
+		// adjust the armadillo's rotation, then draw it
 		armadilloObj.position = pos2;
 		armadilloObj.rotation.y += dt;
 		armadilloObj.rotation.y = armadilloObj.rotation.y > 2 * kPi ? 0 : armadilloObj.rotation.y;
 		drawObject(&armadilloObj, projCameraWorld);
 
-		// draw cube 1
-		// bind markusTexture
-		glBindTexture(GL_TEXTURE_2D, woodTexture);
+		// define positions for the streetlamps
+		Vec3f streetlampPos1 = { -5.f, 0.f, -5.f };	// SE
+		Vec3f streetlampPos2 = { 5.f, 0.f, -5.f };	// SW
+		Vec3f streetlampPos3 = { 0.f, 0.f, 5.f };	// N
+
+		// draw streetlamps
+		// bind iron
+		glBindTexture(GL_TEXTURE_2D, ironTexture);
+		streetlampObj.position = streetlampPos1;
+		streetlampObj.scaling = { 0.25f, 0.25f, 0.25f };
+		streetlampObj.rotation.y = kPi * 3 / 4;
+		drawObject(&streetlampObj, projCameraWorld);
+
+		streetlampObj.position = streetlampPos2;
+		streetlampObj.rotation.y = kPi / 4;
+		drawObject(&streetlampObj, projCameraWorld);
+
+		streetlampObj.position = streetlampPos3;
+		streetlampObj.rotation.y = -kPi / 2;
+		drawObject(&streetlampObj, projCameraWorld);
+
+		// draw the box around the scene
+		// draw floor
+		// bind cobblestonefloor
+		glBindTexture(GL_TEXTURE_2D, cobblestoneFloor);
 
 		glUniformMatrix4fv(
 			0, 1,
-			GL_TRUE, projCameraWorld2.v
+			GL_TRUE, projCameraWorldFloor.v
 		);
 
 		glBindVertexArray(complexObjectVAO);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
-		// draw cube 2
-		//bind woodenTexture
-		glBindTexture(GL_TEXTURE_2D, markusTexture);
+		// draw ceiling
+		// bind nightSky
+		glBindTexture(GL_TEXTURE_2D, nightSkyTexture);
 
 		glUniformMatrix4fv(
 			0, 1,
-			GL_TRUE, projCameraWorld3.v
+			GL_TRUE, projCameraWorldCeiling.v
 		);
 
 		glBindVertexArray(complexObjectVAO);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		// draw north wall
+		// bind northCity
+		glBindTexture(GL_TEXTURE_2D, northCityTexture);
+		glUniformMatrix4fv(
+			0, 1,
+			GL_TRUE, projCameraWorldNorth.v
+		);
+
+		glBindVertexArray(complexObjectVAO);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		// draw south wall
+		// bind southCity
+		glBindTexture(GL_TEXTURE_2D, southCityTexture);
+		glUniformMatrix4fv(
+			0, 1,
+			GL_TRUE, projCameraWorldSouth.v
+		);
+
+		glBindVertexArray(complexObjectVAO);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		// draw west wall
+		// bind westCity
+		glBindTexture(GL_TEXTURE_2D, westCityTexture);
+		glUniformMatrix4fv(
+			0, 1,
+			GL_TRUE, projCameraWorldWest.v
+		);
+
+		glBindVertexArray(complexObjectVAO);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+
+		// draw east wall
+		// bind eastCity
+		glBindTexture(GL_TEXTURE_2D, eastCityTexture);
+		glUniformMatrix4fv(
+			0, 1,
+			GL_TRUE, projCameraWorldEast.v
+		);
+
+		glBindVertexArray(complexObjectVAO);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+
 
 		lightMaterialProps.v[12] = state.sceneLights[0].color.x;
 		lightMaterialProps.v[13] = state.sceneLights[0].color.y;

@@ -1,0 +1,56 @@
+# Blender MTL File: 'streetlamp.blend'
+# Material Count: 5
+
+newmtl Material
+Ns 1.190080
+Ka 1.000000 1.000000 1.000000
+Kd 0.296127 0.213768 0.150282
+Ks 0.036364 0.036364 0.036364
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+
+newmtl concrete
+Ns 225.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd H:\\materials\\LandScape\\concrete.jpg
+
+newmtl glass
+Ns 103.610389
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.065990 0.065990 0.065990
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+
+newmtl knob
+Ns 0.282933
+Ka 1.000000 1.000000 1.000000
+Kd 0.083532 0.083532 0.083532
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 1
+
+newmtl steel
+Ns 225.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 1
+map_Bump H:\\materials\\Steel\\rusty\\SteelCorten_normal.png
+map_Kd H:\\materials\\Steel\\rusty\\SteelCorten_diffuseOriginal.png
+refl H:\\materials\\Steel\\rusty\\SteelCorten_metallic.png
