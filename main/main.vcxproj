@@ -101,9 +101,12 @@
     <ClInclude Include="cylinder.hpp" />
     <ClInclude Include="defaults.hpp" />
     <ClInclude Include="loadobj.hpp" />
+    <ClInclude Include="material.hpp" />
+    <ClInclude Include="mesh_data.hpp" />
     <ClInclude Include="point_light.hpp" />
     <ClInclude Include="scene_object.hpp" />
     <ClInclude Include="simple_mesh.hpp" />
+    <ClInclude Include="transform.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="camera.cpp" />
@@ -111,8 +114,10 @@
     <ClCompile Include="cylinder.cpp" />
     <ClCompile Include="loadobj.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="material.cpp" />
     <ClCompile Include="scene_object.cpp" />
     <ClCompile Include="simple_mesh.cpp" />
+    <ClCompile Include="transform.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\vmlib\vmlib.vcxproj">
