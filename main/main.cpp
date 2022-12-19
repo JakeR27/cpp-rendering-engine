@@ -323,7 +323,7 @@ int main() try
 
 	SceneObj f1Obj;
 	f1Obj.initialise("assets/f1_modified/f1.obj");
-	f1Obj.move({-2.f, 0.f, -2.f});
+	f1Obj.move({-2.f, 0.f, 0.f});
 	
 	updateComplexObject(&f1carObj);
 

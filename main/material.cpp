@@ -46,6 +46,9 @@ int Material::loadTexture()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	// Load wooden container texture
 	int textureWidth, textureHeight, woodTextureChannels;
+
+	stbi_set_flip_vertically_on_load(true);
+
 	unsigned char* textureData = stbi_load(this->textureFilepath.c_str(), &textureWidth, &textureHeight, &woodTextureChannels, 0);
 	// Generate a texture using the image data
 	// Take note if there's an Alpha value or not, you'll either use GL_RGB or GL_RGBA
