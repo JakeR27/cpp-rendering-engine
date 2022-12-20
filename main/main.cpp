@@ -670,26 +670,26 @@ int main() try
 		Mat44f transformEast = make_translation({ -20.f, 7.5f, 0.f }) * make_scaling(0.01f, 7.5f, 20.f);
 		// markus monument pieces
 		// markus
-		Mat44f projCameraWorldMarkus = projection * world2camera * make_translation({ 5.f, 0.21f, 0.f }) * make_scaling(0.4f, 0.025f, 0.4f);
-		Mat44f transformMarkus = make_translation({ 5.f, 0.5f, 0.f }) * make_scaling(1.f, 0.01f, 1.f);
+		Mat44f projCameraWorldMarkus = projection * world2camera * make_translation({ -5.f, 0.21f, 0.f }) * make_scaling(0.4f, 0.025f, 0.4f);
+		Mat44f transformMarkus = make_translation({ -5.f, 0.21f, 0.f }) * make_scaling(0.4f, 0.025f, 0.4f);
 		// monument
-		Mat44f projCameraWorldMonument = projection * world2camera * make_translation({ 5.f, 0.1f, 0.f }) * make_scaling(0.5f, 0.1f, 0.5f);
-		Mat44f transformMonument = make_translation({ 5.f, 0.5f, 0.f }) * make_scaling(1.f, 0.01f, 1.f);
+		Mat44f projCameraWorldMonument = projection * world2camera * make_translation({ -5.f, 0.1f, 0.f }) * make_scaling(0.5f, 0.1f, 0.5f);
+		Mat44f transformMonument = make_translation({ -5.f, 0.1f, 0.f }) * make_scaling(0.5f, 0.1f, 0.5f);
 		// glass box top
-		Mat44f projCameraWorldGlassTop = projection * world2camera * make_translation({ 5.f, 0.5f, 0.f }) * make_scaling(1.f, 0.01f, 1.f);
-		Mat44f transformGlassTop = make_translation({ 5.f, 0.5f, 0.f }) * make_scaling(1.f, 0.01f, 1.f);
+		Mat44f projCameraWorldGlassTop = projection * world2camera * make_translation({ -5.f, 0.5f, 0.f }) * make_scaling(1.f, 0.01f, 1.f);
+		Mat44f transformGlassTop = make_translation({ -5.f, 0.5f, 0.f }) * make_scaling(1.f, 0.01f, 1.f);
 		// glass box north
-		Mat44f projCameraWorldGlassNorth = projection * world2camera * make_translation({ 5.f, 0.25f, 1.f }) * make_scaling(1.f, 0.25f, 0.01f);
-		Mat44f transformGlassNorth = make_translation({ 5.f, 0.25f, 1.f }) * make_scaling(1.f, 0.25f, 0.01f);
+		Mat44f projCameraWorldGlassNorth = projection * world2camera * make_translation({ -5.f, 0.25f, 1.f }) * make_scaling(1.f, 0.25f, 0.01f);
+		Mat44f transformGlassNorth = make_translation({ -5.f, 0.25f, 1.f }) * make_scaling(1.f, 0.25f, 0.01f);
 		// glass box south
-		Mat44f projCameraWorldGlassSouth = projection * world2camera * make_translation({ 5.f, 0.25f, -1.f }) * make_scaling(1.f, 0.25f, 0.01f);
-		Mat44f transformGlassSouth = make_translation({ 5.f, 0.25f, -1.f }) * make_scaling(1.f, 0.25f, 0.01f);
+		Mat44f projCameraWorldGlassSouth = projection * world2camera * make_translation({ -5.f, 0.25f, -1.f }) * make_scaling(1.f, 0.25f, 0.01f);
+		Mat44f transformGlassSouth = make_translation({ -5.f, 0.25f, -1.f }) * make_scaling(1.f, 0.25f, 0.01f);
 		// glass box west
-		Mat44f projCameraWorldGlassWest = projection * world2camera * make_translation({ 6.f, 0.25f, 0.f }) * make_scaling(0.01f, 0.25f, 1.f);
-		Mat44f transformGlassWest = make_translation({ 6.f, 0.25f, 0.f }) * make_scaling(0.01f, 0.25f, 1.f);
+		Mat44f projCameraWorldGlassWest = projection * world2camera * make_translation({ -4.f, 0.25f, 0.f }) * make_scaling(0.01f, 0.25f, 1.f);
+		Mat44f transformGlassWest = projection * world2camera * make_translation({ -4.f, 0.25f, 0.f }) * make_scaling(0.01f, 0.25f, 1.f);
 		// glass box east
-		Mat44f projCameraWorldGlassEast = projection * world2camera * make_translation({ 4.f, 0.25f, 0.f }) * make_scaling(0.01f, 0.25f, 1.f);
-		Mat44f transformGlassEast = make_translation({ 4.f, 0.25f, 0.f }) * make_scaling(0.01f, 0.25f, 1.f);
+		Mat44f projCameraWorldGlassEast = projection * world2camera * make_translation({ -6.f, 0.25f, 0.f }) * make_scaling(0.01f, 0.25f, 1.f);
+		Mat44f transformGlassEast = make_translation({ -6.f, 0.25f, 0.f }) * make_scaling(0.01f, 0.25f, 1.f);
 
 		
 
@@ -779,7 +779,7 @@ int main() try
 
 		// define terms for the armadillo
 		Vec3f pos1 = { 0.f, 0.f, 0.f };
-		Vec3f pos2 = { 0.f, 0.f, -5.f };
+		Vec3f pos2 = { 0.f, 0.f, 4.f };
 
 		// adjust the armadillo's rotation, then draw it
 		armadilloObj.position = pos2;
