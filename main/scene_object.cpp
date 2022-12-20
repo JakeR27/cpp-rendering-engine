@@ -115,11 +115,15 @@ int SceneObj::loadWavefrontObj()
 				result.attributes.normals[idx.normal_index * 3 + 2]
 				});
 
-			float u = result.attributes.texcoords[idx.texcoord_index * 2 + 0];
-			float v = result.attributes.texcoords[idx.texcoord_index * 2 + 1];
-			loadedMesh.texcoords.emplace_back(Vec2f{
-				u, v
+			if (idx.texcoord_index != -1)
+			{
+				loadedMesh.texcoords.emplace_back(Vec2f{
+				result.attributes.texcoords[idx.texcoord_index * 2 + 0],
+				result.attributes.texcoords[idx.texcoord_index * 2 + 1]
 				});
+			}
+
+			
 
 
 			// Always triangles, so we can find the face index by dividing the vertex index by three
@@ -274,7 +278,7 @@ int SceneObj::draw(const Mat44f aProjCamera)
 		GL_TRUE, modelTransform.v
 	);
 
-	for(int i = 0; i < this->meshCount-1; i++)
+	for(int i = 0; i < this->meshCount; i++)
 	{
 		this->meshes[i].material.useMaterial();
 
@@ -286,6 +290,29 @@ int SceneObj::draw(const Mat44f aProjCamera)
 	glBindVertexArray(0);
 
 	return 0;
+}
+
+void SceneObj::forceTexture(std::string aPath)
+{
+	for(auto & [positions, colors, normals, texcoords, material, size] : this->meshes)
+	{
+		texcoords.clear();
+		for (int j = 0; j < size; j++)
+		{
+			texcoords.push_back({
+				positions[j].x,
+				positions[j].y,
+			});
+		}
+	}
+
+	for (int i = 0; i < this->meshCount; i++)
+	{
+		this->meshes[i].material.setTexture(aPath);
+		this->meshes[i].material.loadTexture();
+	}
+
+	this->updateVAO();
 }
 
 

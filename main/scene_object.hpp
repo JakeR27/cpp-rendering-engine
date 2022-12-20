@@ -29,6 +29,7 @@ public:
 	int updateVAO();
 	void move(Vec3f aVec) {transform.setPosition(aVec);}
 	int draw(Mat44f aProjCamera);
+	void forceTexture(std::string aPath);
 };
 
 typedef struct _sceneObject
