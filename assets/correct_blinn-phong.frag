@@ -73,8 +73,11 @@ vec3 pointLightContribution() {
 
 void main()
 {
-	
+	// full blinn-phong
 	oColor = (vec4(v2fTexCoord.xy, 0.0, 0.0) *0)+ (texture(uTexture, v2fTexCoord) *1 ) * (1 *vec4(((pointLightContribution() * v2fColor) + (kE * v2fColor)), 1.0));
+	
+	// normals debug view
+	// oColor = (vec4(v2fTexCoord.xy, 0.0, 0.0) *0)+ (texture(uTexture, v2fTexCoord) *0 ) + (1 *vec4(((pointLightContribution() * 0 + normalize(v2fNormal)) + (kE * v2fColor)), 1.0));
 	// * 0) + normalize(v2fNormal);
 	//oColor = normalize(v2fNormal);
 }

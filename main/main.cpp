@@ -29,6 +29,7 @@
 // include STB_IMAGE for texture mapping, provided in the "third_party" directory
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
+#include <iostream>
 
 namespace
 {
@@ -190,6 +191,10 @@ int main() try
 	glEnable(GL_CULL_FACE);
 	// Clear colour is defined as a grey here
 	glClearColor(0.2f, 0.2f, 0.2f, 0.0f);
+	// enable alpha blending
+	glEnable(GL_BLEND);
+	// define alpha blending function
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	OGL_CHECKPOINT_ALWAYS();
 
@@ -251,6 +256,25 @@ int main() try
 	glGenerateMipmap(GL_TEXTURE_2D);
 	// free the memory used for the image data
 	stbi_image_free(markusTextureData);
+
+	// window texture
+	unsigned int windowTexture;
+	glGenTextures(1, &windowTexture);
+	glBindTexture(GL_TEXTURE_2D, windowTexture);
+	// set the texture wrapping/filtering options (on the currently bound texture object)
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	// Load window texture
+	int windowTextureWidth, windowTextureHeight, windowTextureNRChannels;
+	unsigned char* windowTextureData = stbi_load("assets/textures/window.png", &windowTextureWidth, &windowTextureHeight, &windowTextureNRChannels, 0);
+	// Generate a texture using the image data
+	// Take note if there's an Alpha value or not, you'll either use GL_RGB or GL_RGBA
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, windowTextureWidth, windowTextureHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, windowTextureData);
+	glGenerateMipmap(GL_TEXTURE_2D);
+	// free the memory used for the image data
+	stbi_image_free(windowTextureData);
 
 	// nightsky texture
 	unsigned int nightSkyTexture;
@@ -387,6 +411,104 @@ int main() try
 	glBindBuffer(GL_ARRAY_BUFFER, complexObjectTextureCoordVBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(kCubeTextureCoord), kCubeTextureCoord, GL_STATIC_DRAW);
 
+	// predefine the array for normals
+	float kCubeNormals[] = { 
+		+1.f, +1.f, -1.f,
+		-1.f, +1.f, -1.f,
+		-1.f, +1.f, +1.f,
+		+1.f, +1.f, -1.f,
+		-1.f, +1.f, +1.f,
+		+1.f, +1.f, +1.f,
+
+		+1.f, -1.f, +1.f,
+		+1.f, +1.f, +1.f,
+		-1.f, +1.f, +1.f,
+		+1.f, -1.f, +1.f,
+		-1.f, +1.f, +1.f,
+		-1.f, -1.f, +1.f,
+
+		-1.f, -1.f, +1.f,
+		-1.f, +1.f, +1.f,
+		-1.f, +1.f, -1.f,
+		-1.f, -1.f, +1.f,
+		-1.f, +1.f, -1.f,
+		-1.f, -1.f, -1.f,
+
+		-1.f, -1.f, -1.f,
+		+1.f, -1.f, -1.f,
+		+1.f, -1.f, +1.f,
+		-1.f, -1.f, -1.f,
+		+1.f, -1.f, +1.f,
+		-1.f, -1.f, +1.f,
+
+		+1.f, -1.f, -1.f,
+		+1.f, +1.f, -1.f,
+		+1.f, +1.f, +1.f,
+		+1.f, -1.f, -1.f,
+		+1.f, +1.f, +1.f,
+		+1.f, -1.f, +1.f,
+
+		-1.f, -1.f, -1.f,
+		-1.f, +1.f, -1.f,
+		+1.f, +1.f, -1.f,
+		-1.f, -1.f, -1.f,
+		+1.f, +1.f, -1.f,
+		+1.f, -1.f, -1.f
+	};
+
+	//std::cout << kCubeNormals[0] << ", " << kCubeNormals[1] << ", " << kCubeNormals[2] << '\n';
+
+	// generate normal vectors for the cube
+	// kCubePositions should have indices 0 to 107
+	for (int i = 0; i < 107; i += 3) {
+		std::cout << i << ": ";
+		float x, y, z;
+		if (i >= 0 && i < 18) {	// Top
+			x = 0.f;
+			y = 1.f;
+			z = 0.f;
+		}
+		else if (i >= 18 && i < 36) { // North
+			x = 0.f;
+			y = 0.f;
+			z = 1.f;
+		}
+		else if (i >= 36 && i < 54) { // East
+			x = -1.f;
+			y = 0.f;
+			z = 0.f;
+		}
+		else if (i >= 54 && i < 72) { // Bottom
+			x = 0.f;
+			y = -1.f;
+			z = 0.f;
+		}
+		else if (i >= 72 && i < 90) { // West
+			x = 1.f;
+			y = 0.f;
+			z = 0.f;
+		}
+		else if (i >= 90 && i < 108) { // South
+			x = 0.f;
+			y = 0.f;
+			z = -1.f;
+		}
+		kCubeNormals[i] = x;
+		kCubeNormals[i + 1] = y;
+		kCubeNormals[i + 2] = z;
+		std::cout << kCubeNormals[i] << ", " << kCubeNormals[i+1] << ", " << kCubeNormals[i+2] << '\n';
+	}
+
+	//std::cout << kCubeNormals[0] << ", " << kCubeNormals[1] << ", " << kCubeNormals[2] << '\n';
+	std::cout << sizeof(kCubeNormals) << '\n';
+	
+	// Complex Object Normal VBO
+	GLuint complexObjectNormalVBO = 0;
+	glGenBuffers(1, &complexObjectNormalVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, complexObjectNormalVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(kCubeNormals), kCubeNormals, GL_STATIC_DRAW);
+
+
 	// Bind VBO into VAO
 	GLuint complexObjectVAO = 0;
 	glGenVertexArrays(1, &complexObjectVAO);
@@ -410,6 +532,15 @@ int main() try
 	);
 	glEnableVertexAttribArray(1);
 
+	glBindBuffer(GL_ARRAY_BUFFER, complexObjectNormalVBO);
+	glVertexAttribPointer(
+		2,						// loc 2 in vert shader
+		3, GL_FLOAT, GL_FALSE,	// 3 floats, not normalized
+		0,						// no padding
+		0						// no offset
+	);
+	glEnableVertexAttribArray(2);
+
 	glBindBuffer(GL_ARRAY_BUFFER, complexObjectTextureCoordVBO);
 	glVertexAttribPointer(
 		3,						// loc 3 in vert shader
@@ -418,6 +549,7 @@ int main() try
 		0						// no offset
 	);
 	glEnableVertexAttribArray(3);
+
 
 	// Reset state
 	glBindVertexArray(0);
@@ -516,20 +648,48 @@ int main() try
 		Mat44f world2camera = worldRotationX * worldRotationY *  worldTranslation;
 
 		// define model to world transformations
+		// make sure to also save the transformation matrix to pass to the vertex shader
 		Mat44f projCameraWorld = projection * world2camera;
 		// boundary box
 		// floor
 		Mat44f projCameraWorldFloor = projection * world2camera * make_translation({ 0.f, 0.f, 0.f }) * make_scaling(20.f, 0.01f, 20.f);
+		Mat44f transformFloor = make_translation({ 0.f, 0.f, 0.f }) * make_scaling(20.f, 0.01f, 20.f);
 		// ceiling
 		Mat44f projCameraWorldCeiling = projection * world2camera * make_translation({ 0.f, 15.f, 0.f }) * make_scaling(20.f, 0.01f, 20.f);
+		Mat44f transformCeiling = make_translation({ 0.f, 15.f, 0.f }) * make_scaling(20.f, 0.01f, 20.f);
 		// north wall
 		Mat44f projCameraWorldNorth = projection * world2camera * make_translation({ 0.f, 7.5f, 20.f }) * make_scaling(20.f, 7.5f, 0.01f);
+		Mat44f transformNorth = make_translation({ 0.f, 7.5f, 20.f }) * make_scaling(20.f, 7.5f, 0.01f);
 		// south wall
 		Mat44f projCameraWorldSouth = projection * world2camera * make_translation({0.f, 7.5f, -20.f}) * make_scaling(20.f, 7.5f, 0.01f);
+		Mat44f transformSouth = make_translation({ 0.f, 7.5f, -20.f }) * make_scaling(20.f, 7.5f, 0.01f);
 		// west wall
 		Mat44f projCameraWorldWest = projection * world2camera * make_translation({20.f, 7.5f, 0.f}) * make_scaling(0.01f, 7.5f, 20.f);
+		Mat44f transformWest = make_translation({ 20.f, 7.5f, 0.f }) * make_scaling(0.01f, 7.5f, 20.f);
 		// east wall
 		Mat44f projCameraWorldEast = projection * world2camera * make_translation({-20.f, 7.5f, 0.f }) * make_scaling(0.01f, 7.5f, 20.f);
+		Mat44f transformEast = make_translation({ -20.f, 7.5f, 0.f }) * make_scaling(0.01f, 7.5f, 20.f);
+		// markus monument pieces
+		// markus
+
+		// monument
+
+		// glass box top
+		Mat44f projCameraWorldGlassTop = projection * world2camera * make_translation({ 5.f, 0.5f, 0.f }) * make_scaling(1.f, 0.01f, 1.f);
+		Mat44f transformGlassTop = make_translation({ 5.f, 0.5f, 0.f }) * make_scaling(1.f, 0.01f, 1.f);
+		// glass box north
+		Mat44f projCameraWorldGlassNorth = projection * world2camera * make_translation({ 5.f, 0.25f, 1.f }) * make_scaling(1.f, 0.25f, 0.01f);
+		Mat44f transformGlassNorth = make_translation({ 5.f, 0.25f, 1.f }) * make_scaling(1.f, 0.25f, 0.01f);
+		// glass box south
+		Mat44f projCameraWorldGlassSouth = projection * world2camera * make_translation({ 5.f, 0.25f, -1.f }) * make_scaling(1.f, 0.25f, 0.01f);
+		Mat44f transformGlassSouth = make_translation({ 5.f, 0.25f, -1.f }) * make_scaling(1.f, 0.25f, 0.01f);
+		// glass box west
+		Mat44f projCameraWorldGlassWest = projection * world2camera * make_translation({ 6.f, 0.25f, 0.f }) * make_scaling(0.01f, 0.25f, 1.f);
+		Mat44f transformGlassWest = make_translation({ 6.f, 0.25f, 0.f }) * make_scaling(0.01f, 0.25f, 1.f);
+		// glass box east
+		Mat44f projCameraWorldGlassEast = projection * world2camera * make_translation({ 4.f, 0.25f, 0.f }) * make_scaling(0.01f, 0.25f, 1.f);
+		Mat44f transformGlassEast = make_translation({ 4.f, 0.25f, 0.f }) * make_scaling(0.01f, 0.25f, 1.f);
+
 		
 
 		OGL_CHECKPOINT_DEBUG();
@@ -616,13 +776,15 @@ int main() try
 
 		// define terms for the armadillo
 		Vec3f pos1 = { 0.f, 0.f, 0.f };
-		Vec3f pos2 = { 4.f, 0.f, 0.f };
+		Vec3f pos2 = { 0.f, 0.f, -5.f };
 
 		// adjust the armadillo's rotation, then draw it
 		armadilloObj.position = pos2;
 		armadilloObj.rotation.y += dt;
 		armadilloObj.rotation.y = armadilloObj.rotation.y > 2 * kPi ? 0 : armadilloObj.rotation.y;
 		drawObject(&armadilloObj, projCameraWorld);
+
+		// setting material properties for cubes
 
 		// define positions for the streetlamps
 		Vec3f streetlampPos1 = { -5.f, 0.f, -5.f };	// SE
@@ -654,6 +816,10 @@ int main() try
 			0, 1,
 			GL_TRUE, projCameraWorldFloor.v
 		);
+		glUniformMatrix4fv(
+			1, 1,
+			GL_TRUE, transformFloor.v
+		);
 
 		glBindVertexArray(complexObjectVAO);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -665,6 +831,10 @@ int main() try
 		glUniformMatrix4fv(
 			0, 1,
 			GL_TRUE, projCameraWorldCeiling.v
+		); 
+		glUniformMatrix4fv(
+			1, 1,
+			GL_TRUE, transformCeiling.v
 		);
 
 		glBindVertexArray(complexObjectVAO);
@@ -677,6 +847,10 @@ int main() try
 			0, 1,
 			GL_TRUE, projCameraWorldNorth.v
 		);
+		glUniformMatrix4fv(
+			1, 1,
+			GL_TRUE, transformNorth.v
+		);
 
 		glBindVertexArray(complexObjectVAO);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -688,6 +862,10 @@ int main() try
 			0, 1,
 			GL_TRUE, projCameraWorldSouth.v
 		);
+		glUniformMatrix4fv(
+			1, 1,
+			GL_TRUE, transformSouth.v
+		);
 
 		glBindVertexArray(complexObjectVAO);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -698,6 +876,10 @@ int main() try
 		glUniformMatrix4fv(
 			0, 1,
 			GL_TRUE, projCameraWorldWest.v
+		);
+		glUniformMatrix4fv(
+			1, 1,
+			GL_TRUE, transformWest.v
 		);
 
 		glBindVertexArray(complexObjectVAO);
@@ -711,10 +893,83 @@ int main() try
 			0, 1,
 			GL_TRUE, projCameraWorldEast.v
 		);
+		glUniformMatrix4fv(
+			1, 1,
+			GL_TRUE, transformEast.v
+		);
 
 		glBindVertexArray(complexObjectVAO);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
+		// last things to be drawn should be our transparent objects
+		// draw glass top
+		// bind glass
+		glBindTexture(GL_TEXTURE_2D, windowTexture);
+		glUniformMatrix4fv(
+			0, 1,
+			GL_TRUE, projCameraWorldGlassTop.v
+		);
+		glUniformMatrix4fv(
+			1, 1,
+			GL_TRUE, transformGlassTop.v
+		);
+
+		glBindVertexArray(complexObjectVAO);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		// draw glass north
+		glUniformMatrix4fv(
+			0, 1,
+			GL_TRUE, projCameraWorldGlassNorth.v
+		);
+		glUniformMatrix4fv(
+			1, 1,
+			GL_TRUE, transformGlassNorth.v
+		);
+		glBindVertexArray(complexObjectVAO);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		// draw glass south
+		glUniformMatrix4fv(
+			0, 1,
+			GL_TRUE, projCameraWorldGlassSouth.v
+		);
+		glUniformMatrix4fv(
+			1, 1,
+			GL_TRUE, transformGlassSouth.v
+		);
+
+		glBindVertexArray(complexObjectVAO);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		// draw glass east
+		glUniformMatrix4fv(
+			0, 1,
+			GL_TRUE, projCameraWorldGlassEast.v
+		);
+		glUniformMatrix4fv(
+			1, 1,
+			GL_TRUE, transformGlassSouth.v
+		);
+
+		glBindVertexArray(complexObjectVAO);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		// draw glass west
+		glUniformMatrix4fv(
+			0, 1,
+			GL_TRUE, projCameraWorldGlassWest.v
+		);
+		glUniformMatrix4fv(
+			1, 1,
+			GL_TRUE, transformGlassWest.v
+		);
+
+		glBindVertexArray(complexObjectVAO);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		// reset texture state (using iron texture as a reset)
+		glBindTexture(GL_TEXTURE_2D, ironTexture);
 
 		lightMaterialProps.v[12] = state.sceneLights[0].color.x;
 		lightMaterialProps.v[13] = state.sceneLights[0].color.y;
