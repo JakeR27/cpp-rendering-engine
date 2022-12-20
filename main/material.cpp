@@ -48,15 +48,15 @@ int Material::loadTexture()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	// Load wooden container texture
-	int textureWidth, textureHeight, woodTextureChannels;
+	int textureWidth, textureHeight, textureChannels;
 
 	stbi_set_flip_vertically_on_load(true);
 
-	unsigned char* textureData = stbi_load(this->textureFilepath.c_str(), &textureWidth, &textureHeight, &woodTextureChannels, 0);
+	unsigned char* textureData = stbi_load(this->textureFilepath.c_str(), &textureWidth, &textureHeight, &textureChannels, 0);
 	GLenum const fmt[] = {GL_RED, GL_RG, GL_RGB, GL_RGBA};
 	// Generate a texture using the image data
 	// Take note if there's an Alpha value or not, you'll either use GL_RGB or GL_RGBA
-	glTexImage2D(GL_TEXTURE_2D, 0, fmt[woodTextureChannels-1], textureWidth, textureHeight, 0, fmt[woodTextureChannels-1], GL_UNSIGNED_BYTE, textureData);
+	glTexImage2D(GL_TEXTURE_2D, 0, fmt[textureChannels-1], textureWidth, textureHeight, 0, fmt[textureChannels-1], GL_UNSIGNED_BYTE, textureData);
 	glGenerateMipmap(GL_TEXTURE_2D);
 	// free the memory used for the image data
 	stbi_image_free(textureData);
