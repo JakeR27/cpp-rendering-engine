@@ -292,7 +292,7 @@ int SceneObj::draw(const Mat44f aProjCamera)
 	return 0;
 }
 
-void SceneObj::forceTexture(std::string aPath)
+void SceneObj::forceFakeTexCoords()
 {
 	for(auto & [positions, colors, normals, texcoords, material, size] : this->meshes)
 	{
@@ -305,6 +305,11 @@ void SceneObj::forceTexture(std::string aPath)
 			});
 		}
 	}
+		
+}
+
+void SceneObj::forceTexture(std::string aPath)
+{
 
 	for (int i = 0; i < this->meshCount; i++)
 	{
