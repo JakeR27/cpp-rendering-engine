@@ -456,12 +456,9 @@ int main() try
 		+1.f, -1.f, -1.f
 	};
 
-	//std::cout << kCubeNormals[0] << ", " << kCubeNormals[1] << ", " << kCubeNormals[2] << '\n';
-
 	// generate normal vectors for the cube
 	// kCubePositions should have indices 0 to 107
 	for (int i = 0; i < 107; i += 3) {
-		std::cout << i << ": ";
 		float x, y, z;
 		if (i >= 0 && i < 18) {	// Top
 			x = 0.f;
@@ -496,11 +493,7 @@ int main() try
 		kCubeNormals[i] = x;
 		kCubeNormals[i + 1] = y;
 		kCubeNormals[i + 2] = z;
-		std::cout << kCubeNormals[i] << ", " << kCubeNormals[i+1] << ", " << kCubeNormals[i+2] << '\n';
 	}
-
-	//std::cout << kCubeNormals[0] << ", " << kCubeNormals[1] << ", " << kCubeNormals[2] << '\n';
-	std::cout << sizeof(kCubeNormals) << '\n';
 	
 	// Complex Object Normal VBO
 	GLuint complexObjectNormalVBO = 0;
@@ -671,9 +664,11 @@ int main() try
 		Mat44f transformEast = make_translation({ -20.f, 7.5f, 0.f }) * make_scaling(0.01f, 7.5f, 20.f);
 		// markus monument pieces
 		// markus
-
+		Mat44f projCameraWorldMarkus = projection * world2camera * make_translation({ 5.f, 0.21f, 0.f }) * make_scaling(0.4f, 0.025f, 0.4f);
+		Mat44f transformMarkus = make_translation({ 5.f, 0.5f, 0.f }) * make_scaling(1.f, 0.01f, 1.f);
 		// monument
-
+		Mat44f projCameraWorldMonument = projection * world2camera * make_translation({ 5.f, 0.1f, 0.f }) * make_scaling(0.5f, 0.1f, 0.5f);
+		Mat44f transformMonument = make_translation({ 5.f, 0.5f, 0.f }) * make_scaling(1.f, 0.01f, 1.f);
 		// glass box top
 		Mat44f projCameraWorldGlassTop = projection * world2camera * make_translation({ 5.f, 0.5f, 0.f }) * make_scaling(1.f, 0.01f, 1.f);
 		Mat44f transformGlassTop = make_translation({ 5.f, 0.5f, 0.f }) * make_scaling(1.f, 0.01f, 1.f);
@@ -896,6 +891,35 @@ int main() try
 		glUniformMatrix4fv(
 			1, 1,
 			GL_TRUE, transformEast.v
+		);
+
+		glBindVertexArray(complexObjectVAO);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		// draw the monument to Markus
+		// iron monument base
+		glBindTexture(GL_TEXTURE_2D, ironTexture);
+		glUniformMatrix4fv(
+			0, 1,
+			GL_TRUE, projCameraWorldMonument.v
+		);
+		glUniformMatrix4fv(
+			1, 1,
+			GL_TRUE, transformMonument.v
+		);
+
+		glBindVertexArray(complexObjectVAO);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		// markus plaque
+		glBindTexture(GL_TEXTURE_2D, markusTexture);
+		glUniformMatrix4fv(
+			0, 1,
+			GL_TRUE, projCameraWorldMarkus.v
+		);
+		glUniformMatrix4fv(
+			1, 1,
+			GL_TRUE, transformMarkus.v
 		);
 
 		glBindVertexArray(complexObjectVAO);
