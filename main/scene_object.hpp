@@ -29,7 +29,9 @@ protected:
 public:
 	int initialise(std::string aPath);
 	int updateVAO();
+	void scale(Vec3f aVec) {transform.setScale(aVec);}
 	void move(Vec3f aVec) {transform.setPosition(aVec);}
+	void rotate(Vec3f aVec) {transform.setRotation(aVec);}
 	int draw(Mat44f aProjCamera);
 	void forceFakeTexCoords();
 	void forceTexture(std::string aPath);

@@ -570,10 +570,12 @@ int main() try
 		}
 	}
 
-	SceneObj f1Obj;
+	AnimationObj f1Obj;
 	f1Obj.initialise("assets/f1_modified/f1.obj");
 	//f1Obj.initialise("assets/f1/ferrari-f1-race-car.obj");
-	f1Obj.move({-2.f, 0.f, 0.f});
+	f1Obj.rotate({0.f, 0.5f * kPi, 0.f});
+	f1Obj.setPositionAnchors(Vec3f{-10.f, 0.f, 6.f}, Vec3f{10.f, 0.f, 6.f});
+	f1Obj.setupAnimation(300, RECIPROCAL, REPEAT);
 
 	AnimationObj arm2Obj;
 	arm2Obj.initialise("assets/Armadillo.obj");
@@ -583,6 +585,14 @@ int main() try
 	arm2Obj.setRotationAnchors(Vec3f{0.f, 0.5f*kPi, 0.f}, Vec3f{0.f, 1.5*kPi, 0.f});
 	arm2Obj.setupAnimation(200, LINEAR, BOUNCE);
 	//arm2Obj.forceTexture("assets/squiggle.png");
+
+	AnimationObj muscleCarObj;
+	muscleCarObj.initialise("assets/msc_car/1967-shelby-ford-mustang.obj");
+	muscleCarObj.scale({0.4f, 0.4f, 0.4f});
+	muscleCarObj.rotate({0.f, 1.5f * kPi, 0.f});
+	muscleCarObj.setPositionAnchors(Vec3f{-10.f, 0.f, 4.f}, Vec3f{10.f, 0.f, 4.f});
+	muscleCarObj.setupAnimation(300, SINUSOIDAL, REPEAT);
+
 	
 	updateComplexObject(&f1carObj);
 
@@ -778,10 +788,21 @@ int main() try
 		drawComplexObject(&f1carObj, projCameraWorld);
 
 		// draw a SceneObj f1 car
+		f1Obj.updateAnimation();
 		f1Obj.draw(projCameraWorld);
 
 		arm2Obj.updateAnimation();
 		arm2Obj.draw(projCameraWorld);
+
+
+
+		muscleCarObj.updateAnimation();
+		muscleCarObj.draw(projCameraWorld);
+
+		glUniformMatrix4fv(
+			3, 1,
+			GL_FALSE, standardMaterialProps.v
+		);
 
 		// define terms for the armadillo
 		Vec3f pos1 = { 0.f, 0.f, 0.f };

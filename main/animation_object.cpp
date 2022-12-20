@@ -39,6 +39,12 @@ float AnimationObj::interpolate(float in)
 			out = (1.f / denom) - 1.f;
 			break;
 		}
+	case RECIPROCAL:
+		{
+			float denom = -(2.f * in + 0.74f);
+			out = (1.f / denom) + 1.36f;
+			break;
+		}
 	}
 
 	if (out > 1) out = 1;
