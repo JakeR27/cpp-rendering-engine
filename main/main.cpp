@@ -451,6 +451,7 @@ int main() try
 	SceneObj arm2Obj;
 	arm2Obj.initialise("assets/Armadillo.obj");
 	arm2Obj.move({0.f, 0.f, -4.f});
+	arm2Obj.forceFakeTexCoords();
 	arm2Obj.forceTexture("C:/Users/Jake/OneDrive - University of Leeds/Documents/UNI/COMP3811/cw2/assets/squiggle.png");
 	//arm2Obj.forceTexture("assets/squiggle.png");
 	
