@@ -25,6 +25,7 @@
 #include "loadobj.hpp"
 #include "point_light.hpp"
 #include "scene_object.hpp"
+#include "animation_object.hpp"
 
 // include STB_IMAGE for texture mapping, provided in the "third_party" directory
 #define STB_IMAGE_IMPLEMENTATION
@@ -574,11 +575,13 @@ int main() try
 	//f1Obj.initialise("assets/f1/ferrari-f1-race-car.obj");
 	f1Obj.move({-2.f, 0.f, 0.f});
 
-	SceneObj arm2Obj;
+	AnimationObj arm2Obj;
 	arm2Obj.initialise("assets/Armadillo.obj");
 	arm2Obj.move({0.f, 0.f, -4.f});
 	arm2Obj.forceFakeTexCoords();
 	arm2Obj.forceTexture("squiggle.png");
+	arm2Obj.setRotationAnchors(Vec3f{0.f, 0.5f*kPi, 0.f}, Vec3f{0.f, 1.5*kPi, 0.f});
+	arm2Obj.setupAnimation(200, LINEAR, BOUNCE);
 	//arm2Obj.forceTexture("assets/squiggle.png");
 	
 	updateComplexObject(&f1carObj);
@@ -777,6 +780,7 @@ int main() try
 		// draw a SceneObj f1 car
 		f1Obj.draw(projCameraWorld);
 
+		arm2Obj.updateAnimation();
 		arm2Obj.draw(projCameraWorld);
 
 		// define terms for the armadillo

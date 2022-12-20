@@ -10,7 +10,6 @@
 class SceneObj
 {
 	std::string filepath;
-	Transform transform;
 
 	std::vector<MeshData>	meshes;
 	std::vector<Material>	materials;
@@ -23,6 +22,9 @@ class SceneObj
 	int loadWavefrontObj();
 	GLuint createVAO(MeshData aMeshData, std::optional<GLuint> aVAO = std::nullopt);
 	int generateVAOs();
+
+protected:
+	Transform transform;
 
 public:
 	int initialise(std::string aPath);

@@ -95,6 +95,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="animation_object.hpp" />
     <ClInclude Include="camera.hpp" />
     <ClInclude Include="complex_object.hpp" />
     <ClInclude Include="cone.hpp" />
@@ -109,6 +110,7 @@
     <ClInclude Include="transform.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="animation_object.cpp" />
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="cone.cpp" />
     <ClCompile Include="cylinder.cpp" />
