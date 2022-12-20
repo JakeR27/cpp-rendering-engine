@@ -779,7 +779,7 @@ int main() try
 
 		// define terms for the armadillo
 		Vec3f pos1 = { 0.f, 0.f, 0.f };
-		Vec3f pos2 = { 0.f, 0.f, 4.f };
+		Vec3f pos2 = { 4.f, 0.f, 0.f };
 
 		// adjust the armadillo's rotation, then draw it
 		armadilloObj.position = pos2;
