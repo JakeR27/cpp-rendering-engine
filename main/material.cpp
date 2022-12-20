@@ -35,9 +35,26 @@ int Material::loadTexture()
 {
 	if (textureLoaded) return -1;
 
-	if (std::filesystem::exists(this->textureFilepath) == false)
+	if (textureFilepath.empty())
 	{
+		printf("Warning: texture path empty\n");
 		return -1;
+	}
+
+	std::string rootFilepath = std::filesystem::current_path().generic_string() + "/assets/";
+	std::string texturePath = this->textureFilepath;
+
+	if (std::filesystem::exists( texturePath) == false)
+	{
+		printf("Warning: relative texture path not found: %s\n", texturePath.c_str());
+
+		texturePath = rootFilepath + texturePath;
+		if (std::filesystem::exists( texturePath) == false)
+		{
+			printf("Error: texture not found: %s\n", texturePath.c_str());
+			return -1;
+		}
+		
 	}
 
 	glGenTextures(1, &this->textureId);
@@ -52,7 +69,7 @@ int Material::loadTexture()
 
 	stbi_set_flip_vertically_on_load(true);
 
-	unsigned char* textureData = stbi_load(this->textureFilepath.c_str(), &textureWidth, &textureHeight, &textureChannels, 0);
+	unsigned char* textureData = stbi_load(texturePath.c_str(), &textureWidth, &textureHeight, &textureChannels, 0);
 	GLenum const fmt[] = {GL_RED, GL_RG, GL_RGB, GL_RGBA};
 	// Generate a texture using the image data
 	// Take note if there's an Alpha value or not, you'll either use GL_RGB or GL_RGBA

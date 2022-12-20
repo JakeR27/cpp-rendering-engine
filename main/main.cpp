@@ -446,13 +446,14 @@ int main() try
 
 	SceneObj f1Obj;
 	f1Obj.initialise("assets/f1_modified/f1.obj");
+	//f1Obj.initialise("assets/f1/ferrari-f1-race-car.obj");
 	f1Obj.move({-2.f, 0.f, 0.f});
 
 	SceneObj arm2Obj;
 	arm2Obj.initialise("assets/Armadillo.obj");
 	arm2Obj.move({0.f, 0.f, -4.f});
 	arm2Obj.forceFakeTexCoords();
-	arm2Obj.forceTexture("C:/Users/Jake/OneDrive - University of Leeds/Documents/UNI/COMP3811/cw2/assets/squiggle.png");
+	arm2Obj.forceTexture("squiggle.png");
 	//arm2Obj.forceTexture("assets/squiggle.png");
 	
 	updateComplexObject(&f1carObj);
