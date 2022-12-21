@@ -33,6 +33,8 @@
 #include "stb_image.h"
 #include <iostream>
 
+#include "screenshot.hpp"
+
 namespace
 {
 	constexpr char const* kWindowTitle = "COMP3811 - Coursework 2";
@@ -49,6 +51,7 @@ namespace
 		int currentLight = 0;
 		int animationFactor = 1;
 		bool animationPause = false;
+		bool screenshotQueued = false;
 	};
 
 	void glfw_callback_error_( int, char const* );
@@ -1141,6 +1144,14 @@ int main() try
 		OGL_CHECKPOINT_DEBUG();
 		//####################### Display frame #######################
 		glfwSwapBuffers( window );
+
+		if (state.screenshotQueued)
+		{
+			auto epoch = std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch());
+			std::string filepath = "screenshots/" + std::to_string(epoch.count()) + ".png";
+			saveScreenshot(window, filepath);
+			state.screenshotQueued = false;
+		}
 	}
 
 	//####################### Cleanup (on exit) #######################
@@ -1273,6 +1284,10 @@ namespace
 				state->animationPause = !state->animationPause;
 			}
 
+			if (GLFW_KEY_PRINT_SCREEN == aKey && GLFW_PRESS == aAction)
+			{
+				state->screenshotQueued = true;
+			}
 
 			// make camera active if SPACE pressed
 			if( GLFW_KEY_SPACE == aKey && GLFW_PRESS == aAction )
