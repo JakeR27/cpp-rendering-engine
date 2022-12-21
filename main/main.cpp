@@ -25,6 +25,8 @@
 #include "loadobj.hpp"
 #include "point_light.hpp"
 #include "scene_object.hpp"
+#include "animation_object.hpp"
+#include "path_object.hpp"
 
 // include STB_IMAGE for texture mapping, provided in the "third_party" directory
 #define STB_IMAGE_IMPLEMENTATION
@@ -45,6 +47,8 @@ namespace
 		GLenum polygonMode;
 		pointLight sceneLights[kLightCount];
 		int currentLight = 0;
+		int animationFactor = 1;
+		bool animationPause = false;
 	};
 
 	void glfw_callback_error_( int, char const* );
@@ -553,8 +557,9 @@ int main() try
 	
 	// define scene objects
 
-	SceneObject streetlampObj;
-	initObject(&streetlampObj, "assets/streetlamp.obj");
+	SceneObj streetlampObj;
+	streetlampObj.initialise("assets/streetlamp.obj");
+	streetlampObj.forceTexture("textures/iron.jpg");
 
 	SceneObject armadilloObj;
 	initObject(&armadilloObj, "assets/Armadillo.obj");
@@ -569,17 +574,82 @@ int main() try
 		}
 	}
 
-	SceneObj f1Obj;
+	PathObj f1Obj;
 	f1Obj.initialise("assets/f1_modified/f1.obj");
 	//f1Obj.initialise("assets/f1/ferrari-f1-race-car.obj");
-	f1Obj.move({-2.f, 0.f, 0.f});
+	/*f1Obj.rotate({0.f, 0.5f * kPi, 0.f});
+	f1Obj.setPositionAnchors(Vec3f{-10.f, 0.f, 6.f}, Vec3f{10.f, 0.f, 6.f});
+	f1Obj.setupAnimation(300, RECIPROCAL, REPEAT);*/
 
-	SceneObj arm2Obj;
+	float r = 0.5f * kPi;
+
+	f1Obj.addPathPoint({
+		{0.f, r, 0.f},
+		{-10.f, 0.f, 6.f},
+		{1.f, 1.f, 1.f},
+		200, S_CURVE
+	});
+
+	f1Obj.addPathPoint({
+		{0.f, r, 0.f},
+		{10.f, 0.f, 6.f},
+		{1.f, 1.f, 1.f},
+		100, SINUSOIDAL
+	});
+
+	f1Obj.addPathPoint({
+		{0.f, r * 1.5f, 0.f},
+		{12.f, 0.f, 4.f},
+		{1.f, 1.f, 1.f},
+		100, SINUSOIDAL
+	});
+
+	f1Obj.addPathPoint({
+		{0.f, r * 2.f, 0.f},
+		{10.f, 0.f, 6.f},
+		{1.f, 1.f, 1.f},
+		100, SINUSOIDAL
+	});
+
+	f1Obj.addPathPoint({
+		{0.f, r * 2.5f, 0.f},
+		{12.f, 0.f, 8.f},
+		{1.f, 1.f, 1.f},
+		100, SINUSOIDAL
+	});
+
+	f1Obj.addPathPoint({
+		{0.f, r * 3.f, 0.f},
+		{10.f, 0.f, 6.f},
+		{1.f, 1.f, 1.f},
+		100, SINUSOIDAL
+	});
+
+	f1Obj.addPathPoint({
+		{0.f, r * 3.f, 0.f},
+		{-10.f, 0.f, 6.f},
+		{1.f, 1.f, 1.f},
+		200, S_CURVE
+	});
+
+	f1Obj.setupPath();
+
+	AnimationObj arm2Obj;
 	arm2Obj.initialise("assets/Armadillo.obj");
 	arm2Obj.move({0.f, 0.f, -4.f});
 	arm2Obj.forceFakeTexCoords();
 	arm2Obj.forceTexture("squiggle.png");
+	arm2Obj.setRotationAnchors(Vec3f{0.f, 0.5f*kPi, 0.f}, Vec3f{0.f, 1.5*kPi, 0.f});
+	arm2Obj.setupAnimation(200, LINEAR, BOUNCE);
 	//arm2Obj.forceTexture("assets/squiggle.png");
+
+	AnimationObj muscleCarObj;
+	muscleCarObj.initialise("assets/msc_car/1967-shelby-ford-mustang.obj");
+	muscleCarObj.scale({0.4f, 0.4f, 0.4f});
+	muscleCarObj.rotate({0.f, 1.5f * kPi, 0.f});
+	muscleCarObj.setPositionAnchors(Vec3f{-10.f, 0.f, 4.f}, Vec3f{10.f, 0.f, 4.f});
+	muscleCarObj.setupAnimation(300, SINUSOIDAL, REPEAT);
+
 	
 	updateComplexObject(&f1carObj);
 
@@ -775,9 +845,26 @@ int main() try
 		drawComplexObject(&f1carObj, projCameraWorld);
 
 		// draw a SceneObj f1 car
+		if (!state.animationPause) {
+			f1Obj.updatePath(state.animationFactor);
+		}
 		f1Obj.draw(projCameraWorld);
 
+		if (!state.animationPause) {
+			arm2Obj.updateAnimation(state.animationFactor);
+		}
 		arm2Obj.draw(projCameraWorld);
+
+
+		if (!state.animationPause) {
+			muscleCarObj.updateAnimation(state.animationFactor);
+		}
+		muscleCarObj.draw(projCameraWorld);
+
+		glUniformMatrix4fv(
+			3, 1,
+			GL_FALSE, standardMaterialProps.v
+		);
 
 		// define terms for the armadillo
 		Vec3f pos1 = { 0.f, 0.f, 0.f };
@@ -785,8 +872,10 @@ int main() try
 
 		// adjust the armadillo's rotation, then draw it
 		armadilloObj.position = pos2;
-		armadilloObj.rotation.y += dt;
-		armadilloObj.rotation.y = armadilloObj.rotation.y > 2 * kPi ? 0 : armadilloObj.rotation.y;
+		if (!state.animationPause) {
+			armadilloObj.rotation.y += dt * state.animationFactor;
+			armadilloObj.rotation.y = armadilloObj.rotation.y > 2 * kPi ? 0 : armadilloObj.rotation.y;
+		}
 		drawObject(&armadilloObj, projCameraWorld);
 
 		// setting material properties for cubes
@@ -799,18 +888,18 @@ int main() try
 		// draw streetlamps
 		// bind iron
 		glBindTexture(GL_TEXTURE_2D, ironTexture);
-		streetlampObj.position = streetlampPos1;
-		streetlampObj.scaling = { 0.25f, 0.25f, 0.25f };
-		streetlampObj.rotation.y = kPi * 3 / 4;
-		drawObject(&streetlampObj, projCameraWorld);
+		streetlampObj.move(streetlampPos1);
+		streetlampObj.scale({ 0.25f, 0.25f, 0.25f });
+		streetlampObj.rotate({ 0.f, kPi * 3 / 4, 0.f });
+		streetlampObj.draw(projCameraWorld);
 
-		streetlampObj.position = streetlampPos2;
-		streetlampObj.rotation.y = kPi / 4;
-		drawObject(&streetlampObj, projCameraWorld);
+		streetlampObj.move(streetlampPos2);
+		streetlampObj.rotate({ 0.f, kPi / 4, 0.f });
+		streetlampObj.draw(projCameraWorld);
 
-		streetlampObj.position = streetlampPos3;
-		streetlampObj.rotation.y = -kPi / 2;
-		drawObject(&streetlampObj, projCameraWorld);
+		streetlampObj.move(streetlampPos3);
+		streetlampObj.rotate({ 0.f, -kPi / 2, 0.f });
+		streetlampObj.draw(projCameraWorld);
 
 		// draw the box around the scene
 		// draw floor
@@ -1164,6 +1253,24 @@ namespace
 			if ( GLFW_KEY_O == aKey && GLFW_PRESS == aAction)
 			{
 				printf("Light %d, pos: {%f, %f, %f}\n", state->currentLight, state->sceneLights[state->currentLight].position.x, state->sceneLights[state->currentLight].position.y, state->sceneLights[state->currentLight].position.z);
+			}
+
+			// control the animation speed
+			// left arrow slows, right arrow speeds, down arrow pauses
+			if (GLFW_KEY_LEFT == aKey && GLFW_PRESS == aAction) {
+				state->animationFactor--;
+				if (state->animationFactor <= 0) {
+					state->animationFactor = 1;
+				}
+			}
+			if (GLFW_KEY_RIGHT == aKey && GLFW_PRESS == aAction) {
+				state->animationFactor++;
+				if (state->animationFactor > 5) {
+					state->animationFactor = 5;
+				}
+			}
+			if (GLFW_KEY_DOWN == aKey && GLFW_PRESS == aAction) {
+				state->animationPause = !state->animationPause;
 			}
 
 

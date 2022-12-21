@@ -10,7 +10,6 @@
 class SceneObj
 {
 	std::string filepath;
-	Transform transform;
 
 	std::vector<MeshData>	meshes;
 	std::vector<Material>	materials;
@@ -24,10 +23,15 @@ class SceneObj
 	GLuint createVAO(MeshData aMeshData, std::optional<GLuint> aVAO = std::nullopt);
 	int generateVAOs();
 
+protected:
+	Transform transform;
+
 public:
 	int initialise(std::string aPath);
 	int updateVAO();
+	void scale(Vec3f aVec) {transform.setScale(aVec);}
 	void move(Vec3f aVec) {transform.setPosition(aVec);}
+	void rotate(Vec3f aVec) {transform.setRotation(aVec);}
 	int draw(Mat44f aProjCamera);
 	void forceFakeTexCoords();
 	void forceTexture(std::string aPath);
