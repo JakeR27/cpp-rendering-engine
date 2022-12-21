@@ -1,6 +1,6 @@
 #include "path_object.hpp"
 
-void PathObj::updatePath()
+void PathObj::updatePath(int speed)
 {
 
 	if (this->currentStep == 0 && this->currentPointIndex == 0)
@@ -16,7 +16,7 @@ void PathObj::updatePath()
 	}
 
 	this->animationStyle = STOP;
-	this->updateAnimation();
+	this->updateAnimation(speed);
 
 	// check if at end of current point to point
 	if (this->currentStep >= this->totalSteps)

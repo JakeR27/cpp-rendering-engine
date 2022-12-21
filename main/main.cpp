@@ -845,15 +845,20 @@ int main() try
 		drawComplexObject(&f1carObj, projCameraWorld);
 
 		// draw a SceneObj f1 car
-		f1Obj.updatePath();
+		if (!state.animationPause) {
+			f1Obj.updatePath(state.animationFactor);
+		}
 		f1Obj.draw(projCameraWorld);
 
-		arm2Obj.updateAnimation();
+		if (!state.animationPause) {
+			arm2Obj.updateAnimation(state.animationFactor);
+		}
 		arm2Obj.draw(projCameraWorld);
 
 
-
-		muscleCarObj.updateAnimation();
+		if (!state.animationPause) {
+			muscleCarObj.updateAnimation(state.animationFactor);
+		}
 		muscleCarObj.draw(projCameraWorld);
 
 		glUniformMatrix4fv(

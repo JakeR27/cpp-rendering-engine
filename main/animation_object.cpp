@@ -83,9 +83,9 @@ void AnimationObj::setupAnimation(size_t aSteps, INTERPOLATION_STYLE aIntStyle, 
 	animationStyle = aAnimStyle;
 }
 
-void AnimationObj::updateAnimation()
+void AnimationObj::updateAnimation(int speed)
 {
-	currentStep++;
+	currentStep += speed;
 
 	if (currentStep >= totalSteps)
 	{

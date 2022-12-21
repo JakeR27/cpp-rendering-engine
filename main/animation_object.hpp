@@ -41,7 +41,7 @@ public:
 	void setPositionAnchors(std::optional<Vec3f> aPosStart = std::nullopt, std::optional<Vec3f> aPosEnd = std::nullopt);
 	void setScaleAnchors(std::optional<Vec3f> aScaleStart = std::nullopt, std::optional<Vec3f> aScaleEnd = std::nullopt);
 	void setupAnimation(size_t aSteps, INTERPOLATION_STYLE aIntStyle, ANIMATION_STYLE aAnimStyle = STOP);
-	void updateAnimation();
+	void updateAnimation(int speed);
 
 };
 

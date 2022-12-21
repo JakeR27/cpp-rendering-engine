@@ -24,7 +24,7 @@ class PathObj : public AnimationObj
 public:
 	void setupPath(ANIMATION_STYLE aPathStyle = REPEAT) {pathStyle = aPathStyle;}
 	void addPathPoint(const PathPoint aPathPoint) {points.push_back(aPathPoint);}
-	void updatePath();
+	void updatePath(int speed);
 };
 
 #endif//PATH_OBJECT_HEADER_FILE
