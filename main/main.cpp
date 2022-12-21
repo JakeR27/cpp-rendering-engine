@@ -47,6 +47,8 @@ namespace
 		GLenum polygonMode;
 		pointLight sceneLights[kLightCount];
 		int currentLight = 0;
+		int animationFactor = 1;
+		bool animationPause = false;
 	};
 
 	void glfw_callback_error_( int, char const* );
@@ -865,8 +867,10 @@ int main() try
 
 		// adjust the armadillo's rotation, then draw it
 		armadilloObj.position = pos2;
-		armadilloObj.rotation.y += dt;
-		armadilloObj.rotation.y = armadilloObj.rotation.y > 2 * kPi ? 0 : armadilloObj.rotation.y;
+		if (!state.animationPause) {
+			armadilloObj.rotation.y += dt * state.animationFactor;
+			armadilloObj.rotation.y = armadilloObj.rotation.y > 2 * kPi ? 0 : armadilloObj.rotation.y;
+		}
 		drawObject(&armadilloObj, projCameraWorld);
 
 		// setting material properties for cubes
@@ -1244,6 +1248,24 @@ namespace
 			if ( GLFW_KEY_O == aKey && GLFW_PRESS == aAction)
 			{
 				printf("Light %d, pos: {%f, %f, %f}\n", state->currentLight, state->sceneLights[state->currentLight].position.x, state->sceneLights[state->currentLight].position.y, state->sceneLights[state->currentLight].position.z);
+			}
+
+			// control the animation speed
+			// left arrow slows, right arrow speeds, down arrow pauses
+			if (GLFW_KEY_LEFT == aKey && GLFW_PRESS == aAction) {
+				state->animationFactor--;
+				if (state->animationFactor <= 0) {
+					state->animationFactor = 1;
+				}
+			}
+			if (GLFW_KEY_RIGHT == aKey && GLFW_PRESS == aAction) {
+				state->animationFactor++;
+				if (state->animationFactor > 5) {
+					state->animationFactor = 5;
+				}
+			}
+			if (GLFW_KEY_DOWN == aKey && GLFW_PRESS == aAction) {
+				state->animationPause = !state->animationPause;
 			}
 
 
