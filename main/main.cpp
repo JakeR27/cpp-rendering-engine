@@ -555,8 +555,9 @@ int main() try
 	
 	// define scene objects
 
-	SceneObject streetlampObj;
-	initObject(&streetlampObj, "assets/streetlamp.obj");
+	SceneObj streetlampObj;
+	streetlampObj.initialise("assets/streetlamp.obj");
+	streetlampObj.forceTexture("textures/iron.jpg");
 
 	SceneObject armadilloObj;
 	initObject(&armadilloObj, "assets/Armadillo.obj");
@@ -878,18 +879,18 @@ int main() try
 		// draw streetlamps
 		// bind iron
 		glBindTexture(GL_TEXTURE_2D, ironTexture);
-		streetlampObj.position = streetlampPos1;
-		streetlampObj.scaling = { 0.25f, 0.25f, 0.25f };
-		streetlampObj.rotation.y = kPi * 3 / 4;
-		drawObject(&streetlampObj, projCameraWorld);
+		streetlampObj.move(streetlampPos1);
+		streetlampObj.scale({ 0.25f, 0.25f, 0.25f });
+		streetlampObj.rotate({ 0.f, kPi * 3 / 4, 0.f });
+		streetlampObj.draw(projCameraWorld);
 
-		streetlampObj.position = streetlampPos2;
-		streetlampObj.rotation.y = kPi / 4;
-		drawObject(&streetlampObj, projCameraWorld);
+		streetlampObj.move(streetlampPos2);
+		streetlampObj.rotate({ 0.f, kPi / 4, 0.f });
+		streetlampObj.draw(projCameraWorld);
 
-		streetlampObj.position = streetlampPos3;
-		streetlampObj.rotation.y = -kPi / 2;
-		drawObject(&streetlampObj, projCameraWorld);
+		streetlampObj.move(streetlampPos3);
+		streetlampObj.rotate({ 0.f, -kPi / 2, 0.f });
+		streetlampObj.draw(projCameraWorld);
 
 		// draw the box around the scene
 		// draw floor
