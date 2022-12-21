@@ -22,17 +22,20 @@ enum ANIMATION_STYLE
 
 class AnimationObj : public SceneObj
 {
-	Vec3f rotationStart, rotationEnd;
-	Vec3f positionStart, positionEnd;
-	Vec3f scaleStart, scaleEnd;
+	
 
 	bool rotationSet = false, positionSet = false, scaleSet = false;
 	INTERPOLATION_STYLE interpolationStyle;
-	ANIMATION_STYLE animationStyle;
+	
+	float interpolate(float in);
 
+protected:
+	Vec3f rotationStart, rotationEnd;
+	Vec3f positionStart, positionEnd;
+	Vec3f scaleStart, scaleEnd;
 	size_t currentStep = 0;
 	size_t totalSteps = 1;
-	float interpolate(float in);
+	ANIMATION_STYLE animationStyle;
 public:
 	void setRotationAnchors(std::optional<Vec3f> aRotStart = std::nullopt, std::optional<Vec3f> aRotEnd = std::nullopt);
 	void setPositionAnchors(std::optional<Vec3f> aPosStart = std::nullopt, std::optional<Vec3f> aPosEnd = std::nullopt);

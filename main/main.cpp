@@ -26,6 +26,7 @@
 #include "point_light.hpp"
 #include "scene_object.hpp"
 #include "animation_object.hpp"
+#include "path_object.hpp"
 
 // include STB_IMAGE for texture mapping, provided in the "third_party" directory
 #define STB_IMAGE_IMPLEMENTATION
@@ -570,12 +571,65 @@ int main() try
 		}
 	}
 
-	AnimationObj f1Obj;
+	PathObj f1Obj;
 	f1Obj.initialise("assets/f1_modified/f1.obj");
 	//f1Obj.initialise("assets/f1/ferrari-f1-race-car.obj");
-	f1Obj.rotate({0.f, 0.5f * kPi, 0.f});
+	/*f1Obj.rotate({0.f, 0.5f * kPi, 0.f});
 	f1Obj.setPositionAnchors(Vec3f{-10.f, 0.f, 6.f}, Vec3f{10.f, 0.f, 6.f});
-	f1Obj.setupAnimation(300, RECIPROCAL, REPEAT);
+	f1Obj.setupAnimation(300, RECIPROCAL, REPEAT);*/
+
+	float r = 0.5f * kPi;
+
+	f1Obj.addPathPoint({
+		{0.f, r, 0.f},
+		{-10.f, 0.f, 6.f},
+		{1.f, 1.f, 1.f},
+		200, S_CURVE
+	});
+
+	f1Obj.addPathPoint({
+		{0.f, r, 0.f},
+		{10.f, 0.f, 6.f},
+		{1.f, 1.f, 1.f},
+		100, SINUSOIDAL
+	});
+
+	f1Obj.addPathPoint({
+		{0.f, r * 1.5f, 0.f},
+		{12.f, 0.f, 4.f},
+		{1.f, 1.f, 1.f},
+		100, SINUSOIDAL
+	});
+
+	f1Obj.addPathPoint({
+		{0.f, r * 2.f, 0.f},
+		{10.f, 0.f, 6.f},
+		{1.f, 1.f, 1.f},
+		100, SINUSOIDAL
+	});
+
+	f1Obj.addPathPoint({
+		{0.f, r * 2.5f, 0.f},
+		{12.f, 0.f, 8.f},
+		{1.f, 1.f, 1.f},
+		100, SINUSOIDAL
+	});
+
+	f1Obj.addPathPoint({
+		{0.f, r * 3.f, 0.f},
+		{10.f, 0.f, 6.f},
+		{1.f, 1.f, 1.f},
+		100, SINUSOIDAL
+	});
+
+	f1Obj.addPathPoint({
+		{0.f, r * 3.f, 0.f},
+		{-10.f, 0.f, 6.f},
+		{1.f, 1.f, 1.f},
+		200, S_CURVE
+	});
+
+	f1Obj.setupPath();
 
 	AnimationObj arm2Obj;
 	arm2Obj.initialise("assets/Armadillo.obj");
@@ -788,7 +842,7 @@ int main() try
 		drawComplexObject(&f1carObj, projCameraWorld);
 
 		// draw a SceneObj f1 car
-		f1Obj.updateAnimation();
+		f1Obj.updatePath();
 		f1Obj.draw(projCameraWorld);
 
 		arm2Obj.updateAnimation();

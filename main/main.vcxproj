@@ -104,6 +104,7 @@
     <ClInclude Include="loadobj.hpp" />
     <ClInclude Include="material.hpp" />
     <ClInclude Include="mesh_data.hpp" />
+    <ClInclude Include="path_object.hpp" />
     <ClInclude Include="point_light.hpp" />
     <ClInclude Include="scene_object.hpp" />
     <ClInclude Include="simple_mesh.hpp" />
@@ -117,6 +118,7 @@
     <ClCompile Include="loadobj.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="material.cpp" />
+    <ClCompile Include="path_object.cpp" />
     <ClCompile Include="scene_object.cpp" />
     <ClCompile Include="simple_mesh.cpp" />
     <ClCompile Include="transform.cpp" />
