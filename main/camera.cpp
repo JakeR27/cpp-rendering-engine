@@ -17,8 +17,8 @@ void cam_handle_key(cameraControl* aCamera, int aKey, int aAction)
 		case GLFW_KEY_S: _cam_handle_keyaction(&aCamera->actionBackwards, aAction); break;
 		case GLFW_KEY_A: _cam_handle_keyaction(&aCamera->actionLeft, aAction); break;
 		case GLFW_KEY_D: _cam_handle_keyaction(&aCamera->actionRight, aAction); break;
-		case GLFW_KEY_Q: _cam_handle_keyaction(&aCamera->actionUp, aAction); break;
-		case GLFW_KEY_E: _cam_handle_keyaction(&aCamera->actionDown, aAction); break;
+		case GLFW_KEY_E: _cam_handle_keyaction(&aCamera->actionUp, aAction); break;
+		case GLFW_KEY_Q: _cam_handle_keyaction(&aCamera->actionDown, aAction); break;
 	}
 }
 
