@@ -107,6 +107,7 @@
     <ClInclude Include="path_object.hpp" />
     <ClInclude Include="point_light.hpp" />
     <ClInclude Include="scene_object.hpp" />
+    <ClInclude Include="screenshot.hpp" />
     <ClInclude Include="simple_mesh.hpp" />
     <ClInclude Include="transform.hpp" />
   </ItemGroup>
