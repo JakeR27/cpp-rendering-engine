@@ -1149,7 +1149,9 @@ int main() try
 		{
 			auto epoch = std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch());
 			std::string filepath = "screenshots/" + std::to_string(epoch.count()) + ".png";
-			saveScreenshot(window, filepath);
+			ScreenshotData ssData = getScreenshotData(window);
+			std::thread t([ssData, filepath]{saveScreenshot(ssData, filepath);});
+			t.detach();
 			state.screenshotQueued = false;
 		}
 	}
