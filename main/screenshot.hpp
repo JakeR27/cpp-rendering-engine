@@ -6,33 +6,46 @@
 #include <vector>
 #include <GLFW/glfw3.h>
 
-void saveScreenshot(GLFWwindow* aWindow, std::string aFilepath)
+struct ScreenshotData
 {
-	//get size of window
+	std::vector<char> buffer;
 	int width, height;
-	glfwGetFramebufferSize(aWindow, &width, &height);
+	GLsizei channels, stride;
+};
 
-	// calculate info
-	GLsizei channels = 3;
-	GLsizei stride = channels * width;
-	stride += (stride % 4) ? (4 - stride % 4) : 0;
+void saveScreenshot(ScreenshotData aData, std::string aFilepath)
+{
 
-	// create buffer
-	GLsizei bufferSize = stride * height;
-	std::vector<char> buffer(bufferSize);
-
-	// read buffer 
-	glPixelStorei(GL_PACK_ALIGNMENT, 4);
-	glReadBuffer(GL_FRONT);
-	glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, buffer.data());
 
 	//save image
 	stbi_flip_vertically_on_write(true);
 	//stbi_write_png("test2.png", width, height, channels, buffer.data(), 0);
-	stbi_write_png(aFilepath.c_str(), width, height, channels, buffer.data(), stride);
+	stbi_write_png(aFilepath.c_str(), aData.width, aData.height, aData.channels, aData.buffer.data(), aData.stride);
 
-	printf(stbi_failure_reason());
+	//printf(stbi_failure_reason());
 
+}
+
+ScreenshotData getScreenshotData(GLFWwindow* aWindow)
+{
+	//get size of window
+	ScreenshotData data;
+	glfwGetFramebufferSize(aWindow, &data.width, &data.height);
+
+	// calculate info
+	data.channels = 3;
+	data.stride = data.channels * data.width;
+	data.stride += (data.stride % 4) ? (4 - data.stride % 4) : 0;
+
+	// create buffer
+	GLsizei bufferSize = data.stride * data.height;
+	data.buffer = std::vector<char>(bufferSize);
+
+	// read buffer 
+	glPixelStorei(GL_PACK_ALIGNMENT, 4);
+	glReadBuffer(GL_FRONT);
+	glReadPixels(0, 0, data.width, data.height, GL_RGB, GL_UNSIGNED_BYTE, data.buffer.data());
+	return data;
 }
 
 #endif//SCREENSHOT_HEADER_FILE
