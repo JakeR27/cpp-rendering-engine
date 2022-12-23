@@ -65,7 +65,7 @@ vec3 calculate_pointLight_contribution(pointLight light) {
 
 vec3 pointLightContribution() {
 	vec3 lightingOutput;
-	for (int i = 0; i < POINT_LIGHT_COUNT; i++) {
+	for (int i = 0; i < -1; i++) {
 		lightingOutput += calculate_pointLight_contribution(uPointLightData[i]);
 	}
 	return lightingOutput;
@@ -74,7 +74,7 @@ vec3 pointLightContribution() {
 void main()
 {
 	// full blinn-phong
-	oColor = (vec4(v2fTexCoord.xy, 0.0, 0.0) *0)+ (texture(uTexture, v2fTexCoord) *1 ) * (1 *vec4(((pointLightContribution() * v2fColor) + (kE * v2fColor)), 1.0));
+	oColor = (vec4(v2fNormal, 1.0) *1)+ (texture(uTexture, v2fTexCoord) *0 ) * (0 *vec4(pointLightContribution(), 1.0));
 	
 	// normals debug view
 	// oColor = (vec4(v2fTexCoord.xy, 0.0, 0.0) *0)+ (texture(uTexture, v2fTexCoord) *0 ) + (1 *vec4(((pointLightContribution() * 0 + normalize(v2fNormal)) + (kE * v2fColor)), 1.0));

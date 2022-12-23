@@ -50,7 +50,12 @@ namespace
 	float kNormFlightSpeed = 3.f;
 	float kSlowFlightSpeed = 1.f;
 	float kFastFlightSpeed = 8.f;
-	Mat44f armadilloMaterialProps;
+	Mat44f armadilloMaterialProps = {
+		0.5f, 0.5f, 0.5f, 0.f,
+		0.5f, 0.5f, 0.5f, 0.f,
+		0.5f, 0.5f, 0.5f, 0.f,
+		0.f, 0.f, 0.f, 10.f
+	};
 
 	struct State_
 	{
@@ -230,6 +235,11 @@ int main() try
 	ShaderProgram prog({
 		{ GL_VERTEX_SHADER, "assets/default.vert" },
 		{ GL_FRAGMENT_SHADER, "assets/correct_blinn-phong.frag" }
+		});
+
+	prog = ShaderProgram ({
+		{ GL_VERTEX_SHADER, "assets/default.vert" },
+		{ GL_FRAGMENT_SHADER, "assets/alternative.frag" }
 		});
 
 	// Other initialization & loading
@@ -768,12 +778,47 @@ int main() try
 			ImGui::SliderFloat3("Diffuse", &armadilloMaterialProps.v[4], 0.f, 1.f);
 			ImGui::SliderFloat3("Specular", &armadilloMaterialProps.v[8], 0.f, 1.f);
 			ImGui::SliderFloat3("Emissive", &armadilloMaterialProps.v[12], 0.f, 1.f);
+			ImGui::SliderFloat("Shininess", &armadilloMaterialProps.v[15], 0.f, 64.f);
 
 			ImGui::Spacing();
 			ImGui::Text("Lighting");
 			ImGui::SliderInt("Selected Light", &state.currentLight, 0, kLightCount-1);
 			ImGui::SliderFloat3("Position", &state.sceneLights[state.currentLight].position.x, -15.f, 15.f);
 			ImGui::SliderFloat3("Color", &state.sceneLights[state.currentLight].color.x, 0.f, 1.f);
+
+			ImGui::Spacing();
+			ImGui::Text("Shaders");
+			if (ImGui::Button("Blinn-Phong"))
+			{
+				prog = ShaderProgram ({
+					{ GL_VERTEX_SHADER, "assets/default.vert" },
+					{ GL_FRAGMENT_SHADER, "assets/correct_blinn-phong.frag" }
+					});
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("Alternative"))
+			{
+				prog = ShaderProgram ({
+					{ GL_VERTEX_SHADER, "assets/default.vert" },
+					{ GL_FRAGMENT_SHADER, "assets/alternative.frag" }
+					});
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("Normals"))
+			{
+				prog = ShaderProgram ({
+					{ GL_VERTEX_SHADER, "assets/default.vert" },
+					{ GL_FRAGMENT_SHADER, "assets/normals.frag" }
+					});
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("Textures"))
+			{
+				prog = ShaderProgram ({
+					{ GL_VERTEX_SHADER, "assets/default.vert" },
+					{ GL_FRAGMENT_SHADER, "assets/textures.frag" }
+					});
+			}
 
 			ImGui::End();
 		}
@@ -899,7 +944,7 @@ int main() try
 			0.8f, 0.8f, 0.8f, 0.f, // kA
 			0.8f, 0.8f, 0.8f, 0.f, // kD
 			0.8f, 0.8f, 0.8f, 0.f,// kS
-			0.f, 0.f, 0.f, 0.f  // kE
+			0.f, 0.f, 0.f, 4.f  // kE
 		};
 
 		Mat44f diffuseMaterialProps = {
