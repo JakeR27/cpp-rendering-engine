@@ -15,6 +15,10 @@
 #include "../vmlib/vec4.hpp"
 #include "../vmlib/mat44.hpp"
 
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
+
 #include "defaults.hpp"
 #include "complex_object.hpp"
 #include "camera.hpp"
