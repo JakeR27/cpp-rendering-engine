@@ -15,6 +15,10 @@
 #include "../vmlib/vec4.hpp"
 #include "../vmlib/mat44.hpp"
 
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
+
 #include "defaults.hpp"
 #include "complex_object.hpp"
 #include "camera.hpp"
@@ -46,6 +50,7 @@ namespace
 	float kNormFlightSpeed = 3.f;
 	float kSlowFlightSpeed = 1.f;
 	float kFastFlightSpeed = 8.f;
+	Mat44f armadilloMaterialProps;
 
 	struct State_
 	{
@@ -58,6 +63,7 @@ namespace
 		bool screenshotQueued = false;
 		bool fastFlight = false;
 		bool slowFlight = false;
+		bool showGuiWindow = true;
 	};
 
 	void glfw_callback_error_( int, char const* );
@@ -570,6 +576,15 @@ int main() try
 	streetlampObj.initialise("assets/streetlamp.obj");
 	streetlampObj.forceTexture("textures/iron.jpg");
 
+	SceneObject globeObj;
+	initObject(&globeObj, "assets/globe-sphere.obj");
+
+	for (int i = 0; i < globeObj.mesh.size; i++)
+	{
+		globeObj.mesh.colors[i] = { 1.f, 1.f, 1.f };
+	}
+	updateObject(&globeObj);
+
 	SceneObject armadilloObj;
 	initObject(&armadilloObj, "assets/Armadillo.obj");
 
@@ -674,11 +689,21 @@ int main() try
 
 	auto lastTime = Clock::now();
 
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+	ImGui::StyleColorsDark();
+	ImGui_ImplGlfw_InitForOpenGL(window, true);
+	ImGui_ImplOpenGL3_Init("#version 150");
+
 	//####################### Main Loop #######################
 	while( !glfwWindowShouldClose( window ) )
 	{
 		// Let GLFW process events
 		glfwPollEvents();
+
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
 		
 		// Check if window was resized.
 		float fbwidth, fbheight;
@@ -724,6 +749,34 @@ int main() try
 		if (state.camControl.actionUp)			state.camControl.position += dt * kFlightSpeed * cam_up(&state.camControl);
 		if (state.camControl.actionDown)		state.camControl.position += dt * kFlightSpeed * cam_down(&state.camControl);
 
+		if (state.showGuiWindow)
+		{
+			ImGui::Begin("Controls", &state.showGuiWindow, ImGuiWindowFlags_AlwaysAutoResize);
+			ImGui::Text("Animation controls");
+			ImGui::Checkbox("Disable Animations", &state.animationPause);
+			ImGui::SliderInt("Animation Speed", &state.animationFactor, 1, 5);
+
+			ImGui::Spacing();
+			ImGui::Text("Flight Controls");
+			ImGui::SliderFloat("Normal Flight Speed", &kNormFlightSpeed,0.f, 10.f);
+			ImGui::SliderFloat("Slow Flight Speed", &kSlowFlightSpeed, 0.f, 10.f);
+			ImGui::SliderFloat("Fast Flight Speed", &kFastFlightSpeed, 0.f, 10.f);
+
+			ImGui::Spacing();
+			ImGui::Text("Basic Armadillo Material Properties");
+			ImGui::SliderFloat3("Ambient", &armadilloMaterialProps.v[0], 0.f, 1.f);
+			ImGui::SliderFloat3("Diffuse", &armadilloMaterialProps.v[4], 0.f, 1.f);
+			ImGui::SliderFloat3("Specular", &armadilloMaterialProps.v[8], 0.f, 1.f);
+			ImGui::SliderFloat3("Emissive", &armadilloMaterialProps.v[12], 0.f, 1.f);
+
+			ImGui::Spacing();
+			ImGui::Text("Lighting");
+			ImGui::SliderInt("Selected Light", &state.currentLight, 0, kLightCount-1);
+			ImGui::SliderFloat3("Position", &state.sceneLights[state.currentLight].position.x, -15.f, 15.f);
+			ImGui::SliderFloat3("Color", &state.sceneLights[state.currentLight].color.x, 0.f, 1.f);
+
+			ImGui::End();
+		}
 
 		Mat44f projection = make_perspective_projection(
 			60.f * kPi / 180.f,
@@ -849,6 +902,27 @@ int main() try
 			0.f, 0.f, 0.f, 0.f  // kE
 		};
 
+		Mat44f diffuseMaterialProps = {
+			0.f, 0.f, 0.f, 0.f, // kA
+			0.8f, 0.8f, 0.8f, 1.f, // kD
+			0.f, 0.f, 0.f, 0.f,// kS
+			0.f, 0.f, 0.f, 0.f  // kE
+		};
+
+		Mat44f specularMaterialProps = {
+			0.f, 0.f, 0.f, 0.f, // kA
+			0.f, 0.f, 0.f, 0.f, // kD
+			0.8f, 0.8f, 0.8f, 1.f,// kS
+			0.f, 0.f, 0.f, 0.f  // kE
+		};
+
+		Mat44f emissiveMaterialProps = {
+			0.f, 0.f, 0.f, 0.f, // kA
+			0.f, 0.f, 0.f, 0.f, // kD
+			0.f, 0.f, 0.f, 0.f,// kS
+			0.8f, 0.8f, 0.8f, 1.f  // kE
+		};
+
 		Mat44f lightMaterialProps = {
 			0.f, 0.f, 0.f, 0.f,   // kA
 			0.f, 0.f, 0.f, 0.f,   // kD
@@ -883,7 +957,7 @@ int main() try
 
 		glUniformMatrix4fv(
 			3, 1,
-			GL_FALSE, standardMaterialProps.v
+			GL_FALSE, armadilloMaterialProps.v
 		);
 
 		// define terms for the armadillo
@@ -898,7 +972,10 @@ int main() try
 		}
 		drawObject(&armadilloObj, projCameraWorld);
 
-		// setting material properties for cubes
+		glUniformMatrix4fv(
+			3, 1,
+			GL_FALSE, standardMaterialProps.v
+		);
 
 		// define positions for the streetlamps
 		Vec3f streetlampPos1 = { -5.f, 0.f, -5.f };	// SE
@@ -1112,7 +1189,41 @@ int main() try
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
 		// reset texture state (using iron texture as a reset)
+
+		// set positions for 3 globes of different materials
+		Vec3f globePos1 = { -1.f, 2.f, 4.f };	// SE
+		Vec3f globePos2 = { 1.f, 2.f, 4.f };	// SW
+		Vec3f globePos3 = { 0.f, 2.f, 6.f };	// N
+
+		// draw globes
+		// bind iron
 		glBindTexture(GL_TEXTURE_2D, ironTexture);
+		globeObj.scaling = { 0.5f, 0.5f, 0.5f };
+
+		globeObj.position = globePos1;
+		// setting material properties
+		glUniformMatrix4fv(
+			3, 1,
+			GL_FALSE, diffuseMaterialProps.v
+		);
+		drawObject(&globeObj, projCameraWorld);
+
+		globeObj.position = globePos2;
+		// setting material properties
+		glUniformMatrix4fv(
+			3, 1,
+			GL_FALSE, specularMaterialProps.v
+		);
+		drawObject(&globeObj, projCameraWorld);
+
+
+		globeObj.position = globePos3;
+		// setting material properties
+		glUniformMatrix4fv(
+			3, 1,
+			GL_FALSE, emissiveMaterialProps.v
+		);
+		drawObject(&globeObj, projCameraWorld);
 
 		lightMaterialProps.v[12] = state.sceneLights[0].color.x;
 		lightMaterialProps.v[13] = state.sceneLights[0].color.y;
@@ -1160,6 +1271,9 @@ int main() try
 
 		OGL_CHECKPOINT_DEBUG();
 		//####################### Display frame #######################
+		ImGui::Render();
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
 		glfwSwapBuffers( window );
 
 		if (state.screenshotQueued)
@@ -1306,6 +1420,14 @@ namespace
 			if (GLFW_KEY_PRINT_SCREEN == aKey && GLFW_PRESS == aAction)
 			{
 				state->screenshotQueued = true;
+			}
+
+			if (GLFW_KEY_C == aKey && GLFW_PRESS == aAction)
+			{
+				if (!state->showGuiWindow)
+				{
+					state->showGuiWindow = true;
+				}
 			}
 
 			if ((GLFW_KEY_LEFT_SHIFT == aKey || GLFW_KEY_RIGHT_SHIFT == aKey) && GLFW_PRESS == aAction)
