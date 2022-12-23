@@ -576,6 +576,15 @@ int main() try
 	streetlampObj.initialise("assets/streetlamp.obj");
 	streetlampObj.forceTexture("textures/iron.jpg");
 
+	SceneObject globeObj;
+	initObject(&globeObj, "assets/globe-sphere.obj");
+
+	for (int i = 0; i < globeObj.mesh.size; i++)
+	{
+		globeObj.mesh.colors[i] = { 1.f, 1.f, 1.f };
+	}
+	updateObject(&globeObj);
+
 	SceneObject armadilloObj;
 	initObject(&armadilloObj, "assets/Armadillo.obj");
 
@@ -893,6 +902,27 @@ int main() try
 			0.f, 0.f, 0.f, 0.f  // kE
 		};
 
+		Mat44f diffuseMaterialProps = {
+			0.f, 0.f, 0.f, 0.f, // kA
+			0.8f, 0.8f, 0.8f, 1.f, // kD
+			0.f, 0.f, 0.f, 0.f,// kS
+			0.f, 0.f, 0.f, 0.f  // kE
+		};
+
+		Mat44f specularMaterialProps = {
+			0.f, 0.f, 0.f, 0.f, // kA
+			0.f, 0.f, 0.f, 0.f, // kD
+			0.8f, 0.8f, 0.8f, 1.f,// kS
+			0.f, 0.f, 0.f, 0.f  // kE
+		};
+
+		Mat44f emissiveMaterialProps = {
+			0.f, 0.f, 0.f, 0.f, // kA
+			0.f, 0.f, 0.f, 0.f, // kD
+			0.f, 0.f, 0.f, 0.f,// kS
+			0.8f, 0.8f, 0.8f, 1.f  // kE
+		};
+
 		Mat44f lightMaterialProps = {
 			0.f, 0.f, 0.f, 0.f,   // kA
 			0.f, 0.f, 0.f, 0.f,   // kD
@@ -946,8 +976,6 @@ int main() try
 			3, 1,
 			GL_FALSE, standardMaterialProps.v
 		);
-
-		// setting material properties for cubes
 
 		// define positions for the streetlamps
 		Vec3f streetlampPos1 = { -5.f, 0.f, -5.f };	// SE
@@ -1161,7 +1189,41 @@ int main() try
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
 		// reset texture state (using iron texture as a reset)
+
+		// set positions for 3 globes of different materials
+		Vec3f globePos1 = { -1.f, 2.f, 4.f };	// SE
+		Vec3f globePos2 = { 1.f, 2.f, 4.f };	// SW
+		Vec3f globePos3 = { 0.f, 2.f, 6.f };	// N
+
+		// draw globes
+		// bind iron
 		glBindTexture(GL_TEXTURE_2D, ironTexture);
+		globeObj.scaling = { 0.5f, 0.5f, 0.5f };
+
+		globeObj.position = globePos1;
+		// setting material properties
+		glUniformMatrix4fv(
+			3, 1,
+			GL_FALSE, diffuseMaterialProps.v
+		);
+		drawObject(&globeObj, projCameraWorld);
+
+		globeObj.position = globePos2;
+		// setting material properties
+		glUniformMatrix4fv(
+			3, 1,
+			GL_FALSE, specularMaterialProps.v
+		);
+		drawObject(&globeObj, projCameraWorld);
+
+
+		globeObj.position = globePos3;
+		// setting material properties
+		glUniformMatrix4fv(
+			3, 1,
+			GL_FALSE, emissiveMaterialProps.v
+		);
+		drawObject(&globeObj, projCameraWorld);
 
 		lightMaterialProps.v[12] = state.sceneLights[0].color.x;
 		lightMaterialProps.v[13] = state.sceneLights[0].color.y;
