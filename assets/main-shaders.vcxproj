@@ -52,6 +52,8 @@
     <None Include="correct_blinn-phong.frag" />
     <None Include="default.frag" />
     <None Include="default.vert" />
+    <None Include="normals.frag" />
+    <None Include="textures.frag" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

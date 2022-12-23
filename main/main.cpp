@@ -237,6 +237,11 @@ int main() try
 		{ GL_FRAGMENT_SHADER, "assets/correct_blinn-phong.frag" }
 		});
 
+	prog = ShaderProgram ({
+		{ GL_VERTEX_SHADER, "assets/default.vert" },
+		{ GL_FRAGMENT_SHADER, "assets/alternative.frag" }
+		});
+
 	// Other initialization & loading
 	OGL_CHECKPOINT_ALWAYS();
 
@@ -771,6 +776,40 @@ int main() try
 			ImGui::SliderInt("Selected Light", &state.currentLight, 0, kLightCount-1);
 			ImGui::SliderFloat3("Position", &state.sceneLights[state.currentLight].position.x, -15.f, 15.f);
 			ImGui::SliderFloat3("Color", &state.sceneLights[state.currentLight].color.x, 0.f, 1.f);
+
+			ImGui::Spacing();
+			ImGui::Text("Shaders");
+			if (ImGui::Button("Blinn-Phong"))
+			{
+				prog = ShaderProgram ({
+					{ GL_VERTEX_SHADER, "assets/default.vert" },
+					{ GL_FRAGMENT_SHADER, "assets/correct_blinn-phong.frag" }
+					});
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("Alternative"))
+			{
+				prog = ShaderProgram ({
+					{ GL_VERTEX_SHADER, "assets/default.vert" },
+					{ GL_FRAGMENT_SHADER, "assets/alternative.frag" }
+					});
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("Normals"))
+			{
+				prog = ShaderProgram ({
+					{ GL_VERTEX_SHADER, "assets/default.vert" },
+					{ GL_FRAGMENT_SHADER, "assets/normals.frag" }
+					});
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("Textures"))
+			{
+				prog = ShaderProgram ({
+					{ GL_VERTEX_SHADER, "assets/default.vert" },
+					{ GL_FRAGMENT_SHADER, "assets/textures.frag" }
+					});
+			}
 
 			ImGui::End();
 		}
