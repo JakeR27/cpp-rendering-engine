@@ -42,6 +42,10 @@ namespace
 	constexpr float const kMovementSensitivity = 2.f;
 	constexpr float const kPi = 3.1415962f;
 	constexpr size_t kLightCount = 3;
+	float kFlightSpeed = 3.f;
+	float kNormFlightSpeed = 3.f;
+	float kSlowFlightSpeed = 1.f;
+	float kFastFlightSpeed = 8.f;
 
 	struct State_
 	{
@@ -52,6 +56,8 @@ namespace
 		int animationFactor = 1;
 		bool animationPause = false;
 		bool screenshotQueued = false;
+		bool fastFlight = false;
+		bool slowFlight = false;
 	};
 
 	void glfw_callback_error_( int, char const* );
@@ -702,12 +708,21 @@ int main() try
 		float dt = std::chrono::duration_cast<Secondsf>(now-lastTime).count();
 		lastTime = now;
 
-		if (state.camControl.actionForwards)	state.camControl.position += dt * kMovementSensitivity * cam_forwards(&state.camControl);
-		if (state.camControl.actionBackwards)	state.camControl.position += dt * kMovementSensitivity * cam_backwards(&state.camControl);
-		if (state.camControl.actionLeft)		state.camControl.position += dt * kMovementSensitivity * cam_left(&state.camControl);
-		if (state.camControl.actionRight)		state.camControl.position += dt * kMovementSensitivity * cam_right(&state.camControl);
-		if (state.camControl.actionUp)			state.camControl.position += dt * kMovementSensitivity * cam_up(&state.camControl);
-		if (state.camControl.actionDown)		state.camControl.position += dt * kMovementSensitivity * cam_down(&state.camControl);
+		//flying
+		kFlightSpeed = kNormFlightSpeed;
+		if (state.fastFlight) {
+			kFlightSpeed = kFastFlightSpeed;
+		}
+		if (state.slowFlight) {
+			kFlightSpeed = kSlowFlightSpeed;
+		}
+
+		if (state.camControl.actionForwards)	state.camControl.position += dt * kFlightSpeed * cam_forwards(&state.camControl);
+		if (state.camControl.actionBackwards)	state.camControl.position += dt * kFlightSpeed * cam_backwards(&state.camControl);
+		if (state.camControl.actionLeft)		state.camControl.position += dt * kFlightSpeed * cam_left(&state.camControl);
+		if (state.camControl.actionRight)		state.camControl.position += dt * kFlightSpeed * cam_right(&state.camControl);
+		if (state.camControl.actionUp)			state.camControl.position += dt * kFlightSpeed * cam_up(&state.camControl);
+		if (state.camControl.actionDown)		state.camControl.position += dt * kFlightSpeed * cam_down(&state.camControl);
 
 
 		Mat44f projection = make_perspective_projection(
@@ -816,8 +831,10 @@ int main() try
 		glUniform1f(
 			12, state.sceneLights[2].brightness
 		);
+		
+		// move camera forwards slightly when passed to renderer to enhance specular lighting
+		Vec3f camPos = state.camControl.position + cam_forwards(&state.camControl) * 3.0f;
 
-		Vec3f camPos = state.camControl.position + cam_forwards(&state.camControl) *3;
 		glUniform3f(
 			2,
 			camPos.x,
@@ -1289,6 +1306,38 @@ namespace
 			if (GLFW_KEY_PRINT_SCREEN == aKey && GLFW_PRESS == aAction)
 			{
 				state->screenshotQueued = true;
+			}
+
+			if ((GLFW_KEY_LEFT_SHIFT == aKey || GLFW_KEY_RIGHT_SHIFT == aKey) && GLFW_PRESS == aAction)
+			{
+				if (!state->fastFlight)
+				{
+					state->slowFlight = true;
+				}
+			}
+
+			if ((GLFW_KEY_LEFT_CONTROL == aKey || GLFW_KEY_RIGHT_CONTROL == aKey) && GLFW_PRESS == aAction)
+			{
+				if (!state->slowFlight)
+				{
+					state->fastFlight = true;
+				}
+			}
+
+			if ((GLFW_KEY_LEFT_SHIFT == aKey || GLFW_KEY_RIGHT_SHIFT == aKey) && GLFW_RELEASE == aAction)
+			{
+				if (state->slowFlight)
+				{
+					state->slowFlight = false;
+				}
+			}
+
+			if ((GLFW_KEY_LEFT_CONTROL == aKey || GLFW_KEY_RIGHT_CONTROL == aKey) && GLFW_RELEASE == aAction)
+			{
+				if (state->fastFlight)
+				{
+					state->fastFlight = false;
+				}
 			}
 
 			// make camera active if SPACE pressed
