@@ -30,7 +30,7 @@ vec3 kA = uMaterialData[0].xyz;
 vec3 kD = uMaterialData[1].xyz;
 vec3 kS = uMaterialData[2].xyz;
 vec3 kE = uMaterialData[3].xyz;
-float kAlphaPrime = 4;
+float kAlphaPrime = uMaterialData[3].w;
 float kAlpha = 4 * kAlphaPrime;
 
 
