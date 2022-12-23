@@ -50,7 +50,12 @@ namespace
 	float kNormFlightSpeed = 3.f;
 	float kSlowFlightSpeed = 1.f;
 	float kFastFlightSpeed = 8.f;
-	Mat44f armadilloMaterialProps;
+	Mat44f armadilloMaterialProps = {
+		0.5f, 0.5f, 0.5f, 0.f,
+		0.5f, 0.5f, 0.5f, 0.f,
+		0.5f, 0.5f, 0.5f, 0.f,
+		0.f, 0.f, 0.f, 10.f
+	};
 
 	struct State_
 	{
@@ -759,6 +764,7 @@ int main() try
 			ImGui::SliderFloat3("Diffuse", &armadilloMaterialProps.v[4], 0.f, 1.f);
 			ImGui::SliderFloat3("Specular", &armadilloMaterialProps.v[8], 0.f, 1.f);
 			ImGui::SliderFloat3("Emissive", &armadilloMaterialProps.v[12], 0.f, 1.f);
+			ImGui::SliderFloat("Shininess", &armadilloMaterialProps.v[15], 0.f, 64.f);
 
 			ImGui::Spacing();
 			ImGui::Text("Lighting");
@@ -890,7 +896,7 @@ int main() try
 			0.8f, 0.8f, 0.8f, 0.f, // kA
 			0.8f, 0.8f, 0.8f, 0.f, // kD
 			0.8f, 0.8f, 0.8f, 0.f,// kS
-			0.f, 0.f, 0.f, 0.f  // kE
+			0.f, 0.f, 0.f, 4.f  // kE
 		};
 
 		Mat44f lightMaterialProps = {

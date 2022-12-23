@@ -91,7 +91,7 @@ void Material::useMaterial()
 			kA.x, kA.y, kA.z, 0.f,
 			kD.x, kD.y, kD.z, 0.f,  
 			kS.x, kS.y, kS.z, 0.f,
-			kE.x, kE.y, kE.z, 0.f
+			kE.x, kE.y, kE.z, 4.f
 	};
 
 	glBindTexture(GL_TEXTURE_2D, textureId);
