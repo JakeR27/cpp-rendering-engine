@@ -48,6 +48,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='release|x64'">
   </ItemDefinitionGroup>
   <ItemGroup>
+    <None Include="alternative.frag" />
     <None Include="correct_blinn-phong.frag" />
     <None Include="default.frag" />
     <None Include="default.vert" />
